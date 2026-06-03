@@ -9,6 +9,7 @@
   document.documentElement.appendChild(host);
 
   const root = host;
+  const TOGGLE_POSITION_KEY = "paper-comments:toggle-position";
   const state = {
     open: false,
     ratingOpen: false,
@@ -26,6 +27,7 @@
     authEmail: "",
     authPassword: "",
     authMessage: "",
+    togglePosition: null,
     shareMessage: "",
     shareMessageCommentId: null
   };
@@ -40,6 +42,98 @@
 
   function canWriteCloudData() {
     return !isCloudMode() || Boolean(state.currentUser);
+  }
+
+  function storageGet(keys) {
+    return new Promise((resolve) => chrome.storage.local.get(keys, resolve));
+  }
+
+  function storageSet(value) {
+    return new Promise((resolve) => chrome.storage.local.set(value, resolve));
+  }
+
+  function clampTogglePosition(position, element) {
+    const width = element?.offsetWidth || 132;
+    const height = element?.offsetHeight || 44;
+    const margin = 10;
+    return {
+      left: Math.min(Math.max(position.left, margin), Math.max(window.innerWidth - width - margin, margin)),
+      top: Math.min(Math.max(position.top, margin), Math.max(window.innerHeight - height - margin, margin))
+    };
+  }
+
+  async function saveTogglePosition(position) {
+    state.togglePosition = position;
+    await storageSet({ [TOGGLE_POSITION_KEY]: position });
+  }
+
+  function applyTogglePosition(toggle) {
+    if (!state.togglePosition) return;
+    const position = clampTogglePosition(state.togglePosition, toggle);
+    toggle.style.left = `${position.left}px`;
+    toggle.style.top = `${position.top}px`;
+    toggle.style.right = "auto";
+  }
+
+  function attachToggleDrag(toggle) {
+    let drag = null;
+    let suppressNextClick = false;
+
+    toggle.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      const rect = toggle.getBoundingClientRect();
+      drag = {
+        startX: event.clientX,
+        startY: event.clientY,
+        left: rect.left,
+        top: rect.top,
+        moved: false
+      };
+      toggle.setPointerCapture(event.pointerId);
+    });
+
+    toggle.addEventListener("pointermove", (event) => {
+      if (!drag) return;
+      const dx = event.clientX - drag.startX;
+      const dy = event.clientY - drag.startY;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) drag.moved = true;
+      if (!drag.moved) return;
+
+      event.preventDefault();
+      toggle.classList.add("is-dragging");
+      const position = clampTogglePosition({
+        left: drag.left + dx,
+        top: drag.top + dy
+      }, toggle);
+      toggle.style.left = `${position.left}px`;
+      toggle.style.top = `${position.top}px`;
+      toggle.style.right = "auto";
+    });
+
+    async function endDrag(event) {
+      if (!drag) return;
+      const didMove = drag.moved;
+      drag = null;
+      toggle.classList.remove("is-dragging");
+      if (toggle.hasPointerCapture(event.pointerId)) {
+        toggle.releasePointerCapture(event.pointerId);
+      }
+      if (didMove) {
+        suppressNextClick = true;
+        const rect = toggle.getBoundingClientRect();
+        await saveTogglePosition(clampTogglePosition({ left: rect.left, top: rect.top }, toggle));
+      }
+    }
+
+    toggle.addEventListener("pointerup", endDrag);
+    toggle.addEventListener("pointercancel", endDrag);
+
+    toggle.addEventListener("click", (event) => {
+      if (!suppressNextClick) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      suppressNextClick = false;
+    });
   }
 
   function createElement(tag, options = {}) {
@@ -145,6 +239,8 @@
         className: "pce-toggle",
         text: `Comments ${state.comments.length}`
       });
+      applyTogglePosition(toggle);
+      attachToggleDrag(toggle);
       toggle.addEventListener("click", () => {
         state.open = true;
         render();
@@ -722,6 +818,8 @@
 
   async function loadData() {
     const store = getDataStore();
+    const savedUi = await storageGet([TOGGLE_POSITION_KEY]);
+    state.togglePosition = savedUi[TOGGLE_POSITION_KEY] || null;
     state.currentUser = store.getCurrentUser ? await store.getCurrentUser() : null;
     state.localUserId = await store.getLocalUserId();
     state.comments = await store.listComments(paper.key, paper);

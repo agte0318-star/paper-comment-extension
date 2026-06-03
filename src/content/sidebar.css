@@ -29,6 +29,8 @@
   font-size: 16px;
   font-weight: 770;
   letter-spacing: 0;
+  touch-action: none;
+  user-select: none;
   backdrop-filter: blur(10px);
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
@@ -64,6 +66,8 @@
   color: #0f5f59 !important;
   font-size: 16px !important;
   font-weight: 770 !important;
+  touch-action: none !important;
+  user-select: none !important;
 }
 
 #paper-comment-extension-root .pce-close {
@@ -205,6 +209,12 @@
 
 .pce-toggle:active {
   transform: translateY(0);
+}
+
+.pce-toggle.is-dragging {
+  cursor: grabbing;
+  transform: none;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 .pce-panel {
