@@ -22,6 +22,7 @@
     hasCommentedToday: false,
     formMessage: "",
     ratingMessage: "",
+    authModalOpen: false,
     authEmail: "",
     authPassword: "",
     authMessage: "",
@@ -148,6 +149,7 @@
     panel.appendChild(renderCommentList());
     panel.appendChild(renderCommentForm());
     root.appendChild(panel);
+    if (state.authModalOpen) root.appendChild(renderAuthModal());
   }
 
   function renderAuthPanel() {
@@ -168,11 +170,54 @@
       signOut.addEventListener("click", async () => {
         await getDataStore().signOut();
         state.authMessage = "";
+        state.authModalOpen = false;
         await loadData();
       });
       section.append(label, signOut);
       return section;
     }
+
+    const label = createElement("div", { className: "pce-auth-label" });
+    label.append(
+      createElement("span", { className: "pce-auth-title", text: "Cloud comments" }),
+      createElement("span", { className: "pce-auth-subtitle", text: "Sign in to post, rate, and like." })
+    );
+    const openButton = createElement("button", {
+      className: "pce-auth-button is-primary",
+      text: "Sign in",
+      attrs: { type: "button" }
+    });
+    openButton.addEventListener("click", () => {
+      state.authModalOpen = true;
+      render();
+    });
+    section.append(label, openButton);
+    return section;
+  }
+
+  function renderAuthModal() {
+    const overlay = createElement("div", { className: "pce-auth-overlay" });
+    const dialog = createElement("section", {
+      className: "pce-auth-dialog",
+      attrs: { role: "dialog", "aria-modal": "true", "aria-label": "Sign in" }
+    });
+    const header = createElement("div", { className: "pce-auth-dialog-header" });
+    const title = createElement("div", { className: "pce-auth-dialog-title" });
+    title.append(
+      createElement("span", { className: "pce-auth-title", text: "Sign in" }),
+      createElement("span", { className: "pce-auth-subtitle", text: "Use cloud comments across papers." })
+    );
+    const close = createElement("button", {
+      className: "pce-auth-icon-button",
+      text: "X",
+      attrs: { type: "button", "aria-label": "Close sign in dialog" }
+    });
+    close.addEventListener("click", () => {
+      state.authModalOpen = false;
+      state.authMessage = "";
+      render();
+    });
+    header.append(title, close);
 
     const form = createElement("form", { className: "pce-auth-form" });
     const email = createElement("input", {
@@ -232,6 +277,7 @@
           state.authEmail = "";
           state.authPassword = "";
           state.authMessage = "";
+          state.authModalOpen = false;
         }
         await loadData();
       } catch (error) {
@@ -247,8 +293,15 @@
     signUp.addEventListener("click", () => runAuth("signup"));
 
     form.append(email, password, actions, message);
-    section.append(form);
-    return section;
+    dialog.append(header, form);
+    overlay.appendChild(dialog);
+    overlay.addEventListener("click", (event) => {
+      if (event.target !== overlay) return;
+      state.authModalOpen = false;
+      state.authMessage = "";
+      render();
+    });
+    return overlay;
   }
 
   function renderListToolbar() {
