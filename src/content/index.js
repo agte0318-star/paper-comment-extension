@@ -477,8 +477,8 @@
       createElement("span", { className: "pce-rating-count", text: getCommunityRatingText() })
     );
     const right = createElement("span", {
-      className: state.ratingOpen ? "pce-rating-chevron is-open" : "pce-rating-chevron",
-      text: state.ratingOpen ? "Close" : (state.paperRating ? "Edit" : "Rate")
+      className: state.ratingOpen ? "pce-rating-action is-open" : "pce-rating-action",
+      text: state.ratingOpen ? "Close" : (state.paperRating ? "Edit" : "Rate +")
     });
     summary.append(left, right);
     summary.addEventListener("click", () => {
