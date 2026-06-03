@@ -52,11 +52,12 @@ The publishable key is safe to ship in the extension package. Do not commit or s
 
 After you sign in once, Supabase will create a row in `profiles`.
 
-Run this SQL to make yourself admin:
+Run this SQL to make yourself admin. The web admin page only opens for users whose profile has `role = 'admin'` and `status = 'active'`:
 
 ```sql
 update public.profiles
-set role = 'admin'
+set role = 'admin',
+    status = 'active'
 where id = 'YOUR_AUTH_USER_ID';
 ```
 

@@ -29,7 +29,7 @@
               This dashboard now reads public visible comments from Supabase. Persistent moderation actions will be added behind admin sign-in.
             </p>
           </div>
-          <div class="toolbar">
+          <div class="toolbar" data-admin-toolbar hidden>
             <input class="search" type="search" placeholder="Search DOI, title, author, or comment" data-admin-search>
             <select class="select" data-admin-status aria-label="Comment status">
               <option value="all">All statuses</option>
@@ -40,9 +40,11 @@
           </div>
         </div>
 
-        <section class="metrics" data-admin-metrics aria-label="Admin metrics"></section>
+        <section class="section auth-card" data-admin-auth></section>
 
-        <div class="admin-grid">
+        <section class="metrics" data-admin-metrics data-admin-protected aria-label="Admin metrics" hidden></section>
+
+        <div class="admin-grid" data-admin-protected hidden>
           <section class="section">
             <div class="section-title">
               <h2>Comment Moderation</h2>

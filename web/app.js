@@ -1,8 +1,11 @@
 const SUPABASE_URL = "https://cckjactvkvgttknhxnot.supabase.co";
 const SUPABASE_KEY = "sb_publishable_RD5ZwdePAnqLRCwzfe9fUQ_CLQIaOzr";
+const ADMIN_SESSION_KEY = "paper-comments:admin-session";
 
 let pageData = null;
 let pageSource = "sample";
+let adminSession = null;
+let adminProfile = null;
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -27,11 +30,11 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
-async function supabaseGet(path) {
+async function supabaseGet(path, session = null) {
   const response = await fetch(`${SUPABASE_URL}${path}`, {
     headers: {
       apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`
+      Authorization: `Bearer ${session?.access_token || SUPABASE_KEY}`
     }
   });
 
@@ -41,6 +44,102 @@ async function supabaseGet(path) {
     throw new Error(payload?.message || payload?.hint || "Supabase request failed.");
   }
   return payload || [];
+}
+
+async function authPost(path, body) {
+  const response = await fetch(`${SUPABASE_URL}${path}`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+
+  const text = await response.text();
+  const payload = text ? JSON.parse(text) : null;
+  if (!response.ok) {
+    throw new Error(payload?.msg || payload?.message || payload?.error_description || "Authentication failed.");
+  }
+  return payload;
+}
+
+function normalizeSession(session) {
+  if (!session) return null;
+  if (!session.expires_at && session.expires_in) {
+    return {
+      ...session,
+      expires_at: Math.floor(Date.now() / 1000) + Number(session.expires_in)
+    };
+  }
+  return session;
+}
+
+function saveAdminSession(session) {
+  adminSession = normalizeSession(session);
+  window.localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(adminSession));
+}
+
+function clearAdminSession() {
+  adminSession = null;
+  adminProfile = null;
+  window.localStorage.removeItem(ADMIN_SESSION_KEY);
+}
+
+function readStoredAdminSession() {
+  try {
+    return normalizeSession(JSON.parse(window.localStorage.getItem(ADMIN_SESSION_KEY)));
+  } catch (error) {
+    return null;
+  }
+}
+
+async function refreshAdminSession(session) {
+  if (!session?.refresh_token) return null;
+  const refreshed = await authPost("/auth/v1/token?grant_type=refresh_token", {
+    refresh_token: session.refresh_token
+  });
+  saveAdminSession(refreshed);
+  return adminSession;
+}
+
+async function getAdminSession() {
+  const session = adminSession || readStoredAdminSession();
+  if (!session) return null;
+  if (session.expires_at && Date.now() / 1000 > session.expires_at - 60) {
+    return refreshAdminSession(session);
+  }
+  adminSession = session;
+  return session;
+}
+
+async function getSessionUser(session) {
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${session.access_token}`
+    }
+  });
+  const text = await response.text();
+  const payload = text ? JSON.parse(text) : null;
+  if (!response.ok) throw new Error(payload?.message || "Could not read signed-in user.");
+  return payload;
+}
+
+async function getAdminProfile(userId, session) {
+  const rows = await supabaseGet(`/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=id,display_name,role,status`, session);
+  return rows[0] || null;
+}
+
+function hasAdminAccess(profile) {
+  return profile?.role === "admin" && profile?.status === "active";
+}
+
+async function signInAdmin(email, password) {
+  const session = await authPost("/auth/v1/token?grant_type=password", { email, password });
+  saveAdminSession(session);
+  return adminSession;
 }
 
 function getPaper(data, paperId) {
@@ -168,8 +267,8 @@ async function loadTrendingData() {
 async function loadAdminData() {
   try {
     const [comments, profiles] = await Promise.all([
-      supabaseGet("/rest/v1/comments?select=id,paper_id,content,like_count,status,created_at,papers(paper_key,title),profiles(display_name,status)&order=created_at.desc&limit=100"),
-      supabaseGet("/rest/v1/profiles?select=id,status&limit=1000")
+      supabaseGet("/rest/v1/comments?select=id,paper_id,content,like_count,status,created_at,papers(paper_key,title),profiles(display_name,status)&order=created_at.desc&limit=100", adminSession),
+      supabaseGet("/rest/v1/profiles?select=id,status&limit=1000", adminSession)
     ]);
 
     pageSource = comments.length || profiles.length ? "live" : "empty";
@@ -364,14 +463,117 @@ function renderAdminPage() {
   });
 }
 
+function setAdminProtectedVisible(visible) {
+  document.querySelectorAll("[data-admin-protected], [data-admin-toolbar]").forEach((element) => {
+    element.hidden = !visible;
+  });
+}
+
+function renderAdminAuth(message = "") {
+  setAdminProtectedVisible(false);
+  const auth = document.querySelector("[data-admin-auth]");
+  if (!auth) return;
+
+  auth.hidden = false;
+  auth.innerHTML = `
+    <div class="auth-card-inner">
+      <div>
+        <h2>Admin sign-in required</h2>
+        <p class="subtle">Only active admin accounts can open the moderation preview.</p>
+      </div>
+      <form class="auth-form" data-admin-login-form>
+        <input class="search" type="email" name="email" placeholder="Admin email" autocomplete="email" required>
+        <input class="search" type="password" name="password" placeholder="Password" autocomplete="current-password" required>
+        <button class="btn primary" type="submit">Sign in</button>
+      </form>
+      ${message ? `<div class="auth-message">${escapeHtml(message)}</div>` : ""}
+    </div>
+  `;
+
+  auth.querySelector("[data-admin-login-form]").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const email = form.elements.email.value.trim();
+    const password = form.elements.password.value;
+    renderAdminAuth("Checking admin access...");
+    try {
+      const session = await signInAdmin(email, password);
+      const user = await getSessionUser(session);
+      const profile = await getAdminProfile(user.id, session);
+      if (!hasAdminAccess(profile)) {
+        clearAdminSession();
+        renderAdminAuth("This account is not an active admin.");
+        return;
+      }
+      adminProfile = profile;
+      await initializeAdminDashboard();
+    } catch (error) {
+      clearAdminSession();
+      renderAdminAuth(error.message);
+    }
+  });
+}
+
+function renderAdminDenied(message) {
+  clearAdminSession();
+  renderAdminAuth(message || "Admin access denied.");
+}
+
+function renderAdminSignedInHeader() {
+  const auth = document.querySelector("[data-admin-auth]");
+  if (!auth) return;
+  auth.hidden = false;
+  auth.innerHTML = `
+    <div class="auth-card-inner auth-card-compact">
+      <div>
+        <strong>${escapeHtml(adminProfile?.display_name || "Admin")}</strong>
+        <div class="status">Signed in as admin</div>
+      </div>
+      <button class="btn" type="button" data-admin-sign-out>Sign out</button>
+    </div>
+  `;
+  auth.querySelector("[data-admin-sign-out]").addEventListener("click", () => {
+    clearAdminSession();
+    renderAdminAuth("Signed out.");
+  });
+}
+
+async function initializeAdminDashboard() {
+  renderAdminSignedInHeader();
+  setAdminProtectedVisible(true);
+  pageData = await loadAdminData();
+  renderAdminPage();
+}
+
+async function initializeAdminPage() {
+  renderAdminAuth("Checking saved session...");
+  try {
+    const session = await getAdminSession();
+    if (!session) {
+      renderAdminAuth();
+      return;
+    }
+    const user = await getSessionUser(session);
+    const profile = await getAdminProfile(user.id, session);
+    if (!hasAdminAccess(profile)) {
+      renderAdminDenied("This account is not an active admin.");
+      return;
+    }
+    adminProfile = profile;
+    await initializeAdminDashboard();
+  } catch (error) {
+    clearAdminSession();
+    renderAdminAuth("Please sign in again.");
+  }
+}
+
 async function initializePage() {
   if (document.body.dataset.page === "trending") {
     pageData = await loadTrendingData();
     renderTrendingPage();
   }
   if (document.body.dataset.page === "admin") {
-    pageData = await loadAdminData();
-    renderAdminPage();
+    await initializeAdminPage();
   }
 }
 

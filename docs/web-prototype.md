@@ -20,7 +20,9 @@ If Supabase cannot be reached, the pages fall back to `web/mock-data.js` so the 
 
 ## Admin Boundary
 
-The public GitHub Pages admin preview does not perform persistent moderation actions. Hiding, deleting, resolving reports, and reading restricted report queues should require a future authenticated admin flow.
+The public GitHub Pages admin preview requires Supabase email/password sign-in and checks that the signed-in profile has `role = 'admin'` and `status = 'active'`.
+
+The current admin page still does not perform persistent moderation actions. Hiding, deleting, resolving reports, and reading restricted report queues should require future authenticated admin operations enforced by Supabase RLS or Edge Functions.
 
 ## Extension Package
 
