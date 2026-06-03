@@ -5,7 +5,7 @@ Local v0.1 prototype for a browser extension that shows a paper-focused comment 
 ## v0.1 Scope
 
 - Detect arXiv papers.
-- Detect DOI-based papers on major natural science publisher sites.
+- Detect DOI-based papers on a broader set of SCI publisher, journal, preprint, DOI, and indexing sites.
 - Inject a right-side comment sidebar.
 - Save comments locally with `chrome.storage.local`.
 - Save one overall article rating per local user and paper.
@@ -26,7 +26,7 @@ Local v0.1 prototype for a browser extension that shows a paper-focused comment 
 3. Enable `Developer mode`.
 4. Click `Load unpacked`.
 5. Select the `paper-comment-extension` project folder.
-6. Open an arXiv paper page such as `https://arxiv.org/abs/1706.03762`, or a publisher DOI page such as Springer, Wiley, Science, ACS, Elsevier, RSC, PNAS, or PLOS.
+6. Open an arXiv paper page such as `https://arxiv.org/abs/1706.03762`, or a DOI-based paper page from a supported SCI publisher, journal platform, preprint server, DOI resolver, or indexing site.
 
 ## Next Milestones
 

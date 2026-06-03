@@ -27,7 +27,7 @@ The extension does not collect, transmit, sell, or share:
 
 ## Website Access
 
-The extension runs only on supported academic paper websites listed in the extension manifest. It reads page metadata such as DOI, arXiv ID, title, and canonical URL to identify the paper and show the correct local comment panel.
+The extension runs only on scholarly domains listed in the extension manifest. It reads page metadata such as DOI, arXiv ID, PubMed ID, PMC ID, title, and canonical URL to identify the paper and show the correct local comment panel.
 
 ## Data Sharing
 

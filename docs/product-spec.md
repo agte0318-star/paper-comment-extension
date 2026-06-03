@@ -2,13 +2,13 @@
 
 ## Goal
 
-Build a local Chrome/Edge extension prototype that shows a paper comment sidebar on arXiv pages and DOI-based natural science publisher pages.
+Build a local Chrome/Edge extension prototype that shows a paper comment sidebar on arXiv pages and DOI-based SCI publisher, journal, preprint, DOI resolver, and indexing pages.
 
 ## Target User Flow
 
 1. User installs the extension locally through `Load unpacked`.
-2. User opens an arXiv paper page or a supported publisher paper page.
-3. Extension detects the arXiv ID or DOI and creates a `paperKey`.
+2. User opens an arXiv paper page or a supported SCI paper page.
+3. Extension detects the arXiv ID, DOI, PubMed ID, or PMC ID and creates a `paperKey`.
 4. User opens the comment sidebar.
 5. User can rate the article as a whole.
 6. User can post one overall comment about the paper.
@@ -18,6 +18,8 @@ Build a local Chrome/Edge extension prototype that shows a paper comment sidebar
 10. The comment, likes, and article rating remain visible after refreshing the same paper page.
 
 ## Supported Sites
+
+The extension intentionally uses an allowlist of scholarly domains rather than all websites. It supports common SCI publishers, preprint servers, DOI resolvers, and indexing platforms. Detection is metadata-driven: the sidebar appears only when the page exposes a paper identifier such as DOI, arXiv ID, PubMed ID, or PMC ID.
 
 - `https://arxiv.org/abs/*`
 - `https://arxiv.org/pdf/*`
@@ -54,6 +56,11 @@ Build a local Chrome/Edge extension prototype that shows a paper comment sidebar
 - American Meteorological Society journals
 - University of Chicago Press journals
 - De Gruyter
+- DOI.org and Crossref
+- Research Square, Preprints.org, SSRN, OSF, ChemRxiv, TechRxiv, EngrXiv
+- BMJ, JAMA Network, NEJM, The Lancet, Karger, Thieme, Liebert, LWW, Wolters Kluwer
+- J-STAGE, SciELO, JCI, Journal of Neuroscience, diabetes journals, endocrine journals, AACR, ASCO
+- Copernicus, AGU, GeoScienceWorld, SPIE, Optica, World Scientific, Emerald, IOS Press, Brill
 
 ## Sidebar Areas
 
@@ -101,7 +108,7 @@ In local v0.1, the same browser user can submit one overall 1-10 rating per pape
 
 - The extension can be loaded unpacked in Chrome/Edge.
 - The sidebar appears on supported paper pages.
-- The detected paper key looks like `arxiv:1706.03762` or `doi:10.xxxx/xxxxx`.
+- The detected paper key looks like `arxiv:1706.03762`, `doi:10.xxxx/xxxxx`, `pubmed:123456`, or `pmc:PMC123456`.
 - Comments are saved per paper key.
 - Article ratings are saved separately from comments.
 - A local user has one rating per paper and can update it once per day.

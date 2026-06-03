@@ -16,7 +16,7 @@ This v0.1 release is designed for early testing. Comments and ratings are stored
 
 Key features:
 
-- Detects arXiv IDs and DOI-based paper pages.
+- Detects arXiv IDs, PubMed IDs, PMC IDs, and DOI-based paper pages across a broader SCI publisher and journal allowlist.
 - Adds a clean right-side paper comment panel.
 - Saves one overall paper comment per local user per day.
 - Saves one overall article rating per local user and paper.
