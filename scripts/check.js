@@ -6,6 +6,7 @@ const requiredFiles = [
   "manifest.json",
   "src/content/detectPaper.js",
   "src/config/supabase.example.js",
+  "src/cloud/supabaseClient.js",
   "src/moderation/blocklist.js",
   "src/storage/localComments.js",
   "src/content/index.js",

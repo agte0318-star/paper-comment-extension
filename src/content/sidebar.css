@@ -183,11 +183,90 @@
   width: min(420px, calc(100vw - 24px));
   height: 100vh;
   display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
+  grid-template-rows: auto auto auto auto 1fr auto;
   background: #fbfbf8;
   color: #171717;
   border-left: 1px solid #d9d4c7;
   box-shadow: -18px 0 42px rgba(31, 41, 55, 0.18);
+}
+
+.pce-auth {
+  display: grid;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e4dfd2;
+  background: #ffffff !important;
+}
+
+.pce-auth-label {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pce-auth-title {
+  color: #263238;
+  font-size: 13px;
+  font-weight: 780;
+}
+
+.pce-auth-subtitle {
+  color: #697174;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pce-auth-form {
+  display: grid;
+  gap: 8px;
+}
+
+.pce-auth-input {
+  width: 100% !important;
+  height: 34px !important;
+  border: 1px solid #cfd8d4 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  color: #17211f !important;
+  padding: 0 10px !important;
+  font-size: 13px !important;
+  outline: none !important;
+}
+
+.pce-auth-actions {
+  display: flex;
+  gap: 8px;
+}
+
+#paper-comment-extension-root .pce-auth-button {
+  min-width: 84px !important;
+  height: 32px !important;
+  padding: 0 12px !important;
+  border: 1px solid #cfd8d4 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  color: #41504d !important;
+  font-size: 13px !important;
+  font-weight: 750 !important;
+}
+
+#paper-comment-extension-root .pce-auth-button.is-primary {
+  border-color: #0d6e67 !important;
+  background: linear-gradient(180deg, #12837a 0%, #0f766e 100%) !important;
+  color: #ffffff !important;
+}
+
+.pce-auth-message {
+  display: none;
+  color: #815213;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.pce-auth-message.is-visible {
+  display: block;
 }
 
 .pce-header {

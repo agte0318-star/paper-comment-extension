@@ -14,6 +14,7 @@
     ratingOpen: false,
     sortMode: "newest",
     comments: [],
+    currentUser: null,
     localUserId: null,
     paperRating: null,
     paperRatingSummary: { count: 0, average: null },
@@ -21,9 +22,24 @@
     hasCommentedToday: false,
     formMessage: "",
     ratingMessage: "",
+    authEmail: "",
+    authPassword: "",
+    authMessage: "",
     shareMessage: "",
     shareMessageCommentId: null
   };
+
+  function getDataStore() {
+    return namespace.cloudStore?.isConfigured() ? namespace.cloudStore : namespace.localComments;
+  }
+
+  function isCloudMode() {
+    return Boolean(namespace.cloudStore?.isConfigured());
+  }
+
+  function canWriteCloudData() {
+    return !isCloudMode() || Boolean(state.currentUser);
+  }
 
   function createElement(tag, options = {}) {
     const element = document.createElement(tag);
@@ -69,10 +85,13 @@
     }
 
     const label = summary.count === 1 ? "rating" : "ratings";
-    return `Average rating: ${Number(summary.average).toFixed(1)}/10 · ${summary.count} ${label}`;
+    return `Average rating: ${Number(summary.average).toFixed(1)}/10 - ${summary.count} ${label}`;
   }
 
   function getCommentRatingAverage(comment) {
+    if (Number.isFinite(Number(comment.ratingScore))) {
+      return Number(comment.ratingScore).toFixed(1);
+    }
     const isLocalUserComment = comment.userId === state.localUserId || !comment.userId;
     if (!isLocalUserComment) return null;
     return getRatingAverage(state.paperRating);
@@ -122,11 +141,114 @@
 
     const panel = createElement("aside", { className: "pce-panel" });
     panel.appendChild(renderHeader());
+    const authPanel = renderAuthPanel();
+    if (authPanel) panel.appendChild(authPanel);
     panel.appendChild(renderPaperRating());
     panel.appendChild(renderListToolbar());
     panel.appendChild(renderCommentList());
     panel.appendChild(renderCommentForm());
     root.appendChild(panel);
+  }
+
+  function renderAuthPanel() {
+    if (!isCloudMode()) return null;
+
+    const section = createElement("section", { className: "pce-auth" });
+    if (state.currentUser) {
+      const label = createElement("div", { className: "pce-auth-label" });
+      label.append(
+        createElement("span", { className: "pce-auth-title", text: "Cloud sync" }),
+        createElement("span", { className: "pce-auth-subtitle", text: state.currentUser.email || "Signed in" })
+      );
+      const signOut = createElement("button", {
+        className: "pce-auth-button",
+        text: "Sign out",
+        attrs: { type: "button" }
+      });
+      signOut.addEventListener("click", async () => {
+        await getDataStore().signOut();
+        state.authMessage = "";
+        await loadData();
+      });
+      section.append(label, signOut);
+      return section;
+    }
+
+    const form = createElement("form", { className: "pce-auth-form" });
+    const email = createElement("input", {
+      className: "pce-auth-input",
+      attrs: {
+        type: "email",
+        placeholder: "Email",
+        autocomplete: "email",
+        value: state.authEmail
+      }
+    });
+    const password = createElement("input", {
+      className: "pce-auth-input",
+      attrs: {
+        type: "password",
+        placeholder: "Password",
+        autocomplete: "current-password",
+        value: state.authPassword
+      }
+    });
+
+    email.addEventListener("input", () => { state.authEmail = email.value; });
+    password.addEventListener("input", () => { state.authPassword = password.value; });
+
+    const actions = createElement("div", { className: "pce-auth-actions" });
+    const signIn = createElement("button", {
+      className: "pce-auth-button is-primary",
+      text: "Sign in",
+      attrs: { type: "submit" }
+    });
+    const signUp = createElement("button", {
+      className: "pce-auth-button",
+      text: "Create account",
+      attrs: { type: "button" }
+    });
+    actions.append(signIn, signUp);
+
+    const message = createElement("div", {
+      className: state.authMessage ? "pce-auth-message is-visible" : "pce-auth-message",
+      text: state.authMessage
+    });
+
+    async function runAuth(mode) {
+      const emailValue = email.value.trim();
+      const passwordValue = password.value;
+      if (!emailValue || !passwordValue) {
+        state.authMessage = "Enter your email and password.";
+        render();
+        return;
+      }
+      try {
+        if (mode === "signup") {
+          await getDataStore().signUp(emailValue, passwordValue);
+          state.authMessage = "Account created. If email confirmation is enabled, confirm your email before signing in.";
+        } else {
+          await getDataStore().signIn(emailValue, passwordValue);
+          state.authEmail = "";
+          state.authPassword = "";
+          state.authMessage = "";
+        }
+        await loadData();
+      } catch (error) {
+        state.authMessage = error.message;
+        render();
+      }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      runAuth("signin");
+    });
+    signUp.addEventListener("click", () => runAuth("signup"));
+
+    form.append(email, password, actions, message);
+    section.append(form);
+    return section;
   }
 
   function renderListToolbar() {
@@ -207,7 +329,7 @@
 
   function renderRatingForm() {
     const form = createElement("form", { className: "pce-rating-form" });
-    const disabled = !state.canUpdateRating;
+    const disabled = !state.canUpdateRating || !canWriteCloudData();
     const currentValue = getRatingAverage() || 5;
     const row = createElement("label", { className: "pce-rating-row pce-rating-row-single" });
     const label = createElement("span", { className: "pce-rating-label", text: "Overall score" });
@@ -235,7 +357,7 @@
 
     const message = createElement("div", {
       className: state.ratingMessage ? "pce-form-message is-visible" : "pce-form-message",
-      text: state.ratingMessage || (disabled ? "You can update this rating once per day." : "")
+      text: state.ratingMessage || (!canWriteCloudData() ? "Sign in to rate this paper." : (disabled ? "You can update this rating once per day." : ""))
     });
     if (disabled && !state.ratingMessage) message.classList.add("is-visible");
 
@@ -261,7 +383,7 @@
       };
 
       try {
-        await namespace.localComments.savePaperRating(paper.key, scores);
+        await getDataStore().savePaperRating(paper.key, scores, paper);
         state.ratingMessage = "";
         await loadData();
       } catch (error) {
@@ -317,14 +439,17 @@
       attrs: { type: "button" }
     });
 
-    if (isOwnComment(comment)) {
+    if (isCloudMode() && !state.currentUser) {
+      likeButton.disabled = true;
+      likeButton.title = "Sign in to like comments.";
+    } else if (isOwnComment(comment)) {
       likeButton.disabled = true;
       likeButton.title = "You can only like comments from other users.";
     }
 
     likeButton.addEventListener("click", async () => {
       try {
-        await namespace.localComments.toggleCommentLike(paper.key, comment.id);
+        await getDataStore().toggleCommentLike(paper.key, comment.id);
         await loadData();
       } catch (error) {
         state.formMessage = error.message;
@@ -432,7 +557,7 @@
 
     context.fillStyle = "#697174";
     context.font = "22px Arial, sans-serif";
-    context.fillText(`Generated by Paper Comment Extension · ${new Date().toLocaleDateString()}`, 72, 582);
+    context.fillText(`Generated by Paper Comment Extension - ${new Date().toLocaleDateString()}`, 72, 582);
 
     const blob = await getCanvasBlob(canvas);
     const fileName = `paper-comment-${comment.id}.png`;
@@ -471,19 +596,21 @@
 
     const footer = createElement("div", { className: "pce-form-footer" });
     footer.appendChild(createElement("span", {
-      text: state.hasCommentedToday ? "One comment per paper per day." : "Overall paper comment"
+      text: !canWriteCloudData()
+        ? "Sign in to post"
+        : (state.hasCommentedToday ? "One comment per paper per day." : "Overall paper comment")
     }));
     const submit = createElement("button", {
       className: "pce-submit",
       text: "Post comment",
       attrs: { type: "submit" }
     });
-    submit.disabled = state.hasCommentedToday;
+    submit.disabled = state.hasCommentedToday || !canWriteCloudData();
     footer.appendChild(submit);
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (state.hasCommentedToday) return;
+      if (state.hasCommentedToday || !canWriteCloudData()) return;
 
       const content = textarea.value.trim();
       if (!content) {
@@ -500,7 +627,7 @@
       }
 
       try {
-        await namespace.localComments.addComment(paper.key, { content });
+        await getDataStore().addComment(paper.key, { content }, paper);
         textarea.value = "";
         state.formMessage = "";
         await loadData();
@@ -510,7 +637,7 @@
       }
     });
 
-    if (state.hasCommentedToday) {
+    if (state.hasCommentedToday || !canWriteCloudData()) {
       textarea.disabled = true;
     }
 
@@ -519,12 +646,14 @@
   }
 
   async function loadData() {
-    state.localUserId = await namespace.localComments.getLocalUserId();
-    state.comments = await namespace.localComments.listComments(paper.key);
-    state.hasCommentedToday = await namespace.localComments.hasCommentedToday(paper.key);
-    state.paperRating = await namespace.localComments.getPaperRating(paper.key);
-    state.paperRatingSummary = await namespace.localComments.getPaperRatingSummary(paper.key);
-    state.canUpdateRating = await namespace.localComments.canUpdateRatingToday(paper.key);
+    const store = getDataStore();
+    state.currentUser = store.getCurrentUser ? await store.getCurrentUser() : null;
+    state.localUserId = await store.getLocalUserId();
+    state.comments = await store.listComments(paper.key, paper);
+    state.hasCommentedToday = await store.hasCommentedToday(paper.key, paper);
+    state.paperRating = await store.getPaperRating(paper.key, paper);
+    state.paperRatingSummary = await store.getPaperRatingSummary(paper.key, paper);
+    state.canUpdateRating = await store.canUpdateRatingToday(paper.key, paper);
     render();
   }
 

@@ -8,7 +8,7 @@ This project is designed as a comment layer around academic papers, not as a pap
 - Do not copy or store full article text.
 - Do not store paywalled figures, tables, or screenshots.
 - Store only paper identifiers, metadata, and user-created comments.
-- v0.1 does not store quoted article text.
+- v0.2 does not store quoted article text.
 
 ## Future Quote Rules
 

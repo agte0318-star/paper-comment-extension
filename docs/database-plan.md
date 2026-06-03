@@ -1,6 +1,6 @@
 # Database Plan
 
-v0.1 uses only `chrome.storage.local`. Supabase is planned for v0.2.
+v0.2 uses Supabase for signed-in shared comments, ratings, likes, reports, paper metadata, and summary views. `chrome.storage.local` remains available as a development fallback when Supabase is not configured.
 
 ## papers
 
@@ -40,10 +40,10 @@ All comments are overall comments about the paper.
 | id | Comment ID |
 | paper_id | Related paper |
 | user_id | Author |
-| parent_id | Parent comment for replies |
 | content | User-created comment text |
 | like_count | Denormalized count for sorting popular comments |
 | status | visible, hidden, deleted |
+| local_date | Date key used for the one-comment-per-paper-per-day limit |
 | created_at | Creation time |
 | updated_at | Last update time |
 | deleted_at | Soft deletion time |
@@ -85,3 +85,10 @@ Each user has one article-level rating per paper. The rating can be edited at mo
 | status | open, reviewing, resolved, dismissed |
 | created_at | Creation time |
 | resolved_at | Resolution time |
+
+## summary views
+
+| View | Purpose |
+| --- | --- |
+| paper_summary | Aggregates comment count, rating count, average rating, and total likes per paper |
+| hot_comments | Lists visible comments with paper metadata and each comment author's paper rating |

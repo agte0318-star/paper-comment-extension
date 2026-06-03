@@ -1,6 +1,6 @@
 # Roadmap
 
-## v0.1 Local Prototype
+## v0.1 Local Prototype - Done
 
 - arXiv detection.
 - DOI detection on major natural science publisher pages.
@@ -8,25 +8,26 @@
 - Local comments.
 - Comment filtering.
 
-## v0.2 Cloud Prototype
+## v0.2 Cloud Prototype - Current
 
 - Supabase project.
-- Email login.
+- Email/password login.
 - Shared public comments.
 - Basic profile table.
+- Shared overall article ratings.
+- Comment likes.
 
 ## v0.3 Moderated Beta
 
-- Reports table.
-- Admin moderation view.
-- PubMed support.
-- bioRxiv and medRxiv support.
-- DOI detection.
-- Privacy policy and terms.
+- Connect report button to Supabase.
+- Connect admin moderation view to Supabase.
+- Connect public trending page to Supabase summary views.
+- Expand user profile controls.
+- Add OAuth sign-in.
 
 ## v1.0 Public Launch
 
-- Chrome Web Store listing.
+- Public Chrome Web Store listing.
 - Support website.
 - Stable moderation workflow.
 - ORCID login exploration.

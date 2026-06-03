@@ -1,9 +1,12 @@
 {
   "manifest_version": 3,
   "name": "Paper Comment Extension",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Rate and comment on academic papers while reading them.",
   "permissions": ["storage"],
+  "host_permissions": [
+    "https://cckjactvkvgttknhxnot.supabase.co/*"
+  ],
   "icons": {
     "16": "public/icons/icon-16.png",
     "48": "public/icons/icon-48.png",
@@ -207,6 +210,8 @@
       ],
       "js": [
         "src/content/detectPaper.js",
+        "src/config/supabase.js",
+        "src/cloud/supabaseClient.js",
         "src/moderation/blocklist.js",
         "src/storage/localComments.js",
         "src/content/index.js"

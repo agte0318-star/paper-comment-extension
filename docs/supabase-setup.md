@@ -6,7 +6,7 @@ This guide prepares the cloud backend for shared comments, ratings, likes, repor
 
 1. Go to Supabase.
 2. Create a new project.
-3. Save the project URL and anon public key from `Project Settings -> API`.
+3. Save the project URL and publishable public key from `Project Settings -> API`.
 
 ## 2. Run SQL Migrations
 
@@ -17,12 +17,11 @@ Open `SQL Editor` and run these files in order:
 
 ## 3. Enable Authentication
 
-Recommended first providers:
+Recommended first provider:
 
-- Email magic link
-- Google OAuth
+- Email/password
 
-For Google OAuth, configure the redirect URLs that will be used by the extension and web dashboard.
+Google OAuth can be added later after the first beta is stable.
 
 ## 4. Configure the Client
 
@@ -43,11 +42,11 @@ Then fill:
 ```js
 window.PCE_SUPABASE_CONFIG = {
   url: "https://YOUR_PROJECT_ID.supabase.co",
-  anonKey: "YOUR_SUPABASE_ANON_KEY"
+  anonKey: "YOUR_SUPABASE_PUBLISHABLE_KEY"
 };
 ```
 
-Do not commit service role keys.
+The publishable key is safe to ship in the extension package. Do not commit or ship a Supabase `service_role` key.
 
 ## 5. First Admin User
 
@@ -81,4 +80,4 @@ Summary views:
 
 ## 7. Current Status
 
-The SQL backend is ready, but the extension still uses local storage. The next development step is to replace local comment, rating, like, and report operations with Supabase queries.
+The SQL backend is ready and the extension can use Supabase for email/password sign-in, shared comments, shared ratings, and comment likes. The next development step is to connect the public trending page and admin dashboard to the Supabase views and moderation tables.

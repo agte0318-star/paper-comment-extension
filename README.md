@@ -1,23 +1,25 @@
 # Paper Comment Extension
 
-Local v0.1 prototype for a browser extension that shows a paper-focused comment sidebar while reading academic articles.
+Chrome/Edge extension for shared article-level comments and ratings while reading academic papers.
 
-## v0.1 Scope
+## v0.2 Scope
 
 - Detect arXiv papers.
 - Detect DOI-based papers on a broader set of SCI publisher, journal, preprint, DOI, and indexing sites, including Wiley journal subdomains and SciOpen/Science China platforms.
-- Inject a right-side comment sidebar.
-- Save comments locally with `chrome.storage.local`.
-- Save one overall article rating per local user and paper.
-- Show the average article rating and rating count in the rating panel.
-- Show the user's overall article score on their comments.
-- Let users like comments written by other users.
+- Inject a right-side comment sidebar on supported scholarly article pages.
+- Let users create an email/password account through Supabase Auth.
+- Store shared comments, ratings, and likes in Supabase when cloud mode is configured.
+- Fall back to `chrome.storage.local` when Supabase is not configured.
+- Save one overall article rating per signed-in user and paper.
+- Show the community average article rating and rating count.
+- Show a comment author's overall article score beside their comment when they have rated that paper.
+- Let signed-in users like comments written by other users.
 - Sort comments by newest or by popularity.
 - Generate a shareable PNG image from a comment.
-- Allow one local rating update per paper per day.
-- Allow one local comment per paper per day.
+- Allow one comment per signed-in user, paper, and day.
+- Allow one rating update per signed-in user, paper, and day.
 - Block obvious abusive or spam-like comments with a starter blocklist.
-- Do not upload PDFs, copy full text, or store article content.
+- Do not upload PDFs, full article text, paywalled content, figures, tables, or screenshots.
 
 ## How to Load Locally
 
@@ -28,13 +30,6 @@ Local v0.1 prototype for a browser extension that shows a paper-focused comment 
 5. Select the `paper-comment-extension` project folder.
 6. Open an arXiv paper page such as `https://arxiv.org/abs/1706.03762`, or a DOI-based paper page from a supported SCI publisher, journal platform, preprint server, DOI resolver, or indexing site.
 
-## Next Milestones
-
-- Add PubMed ID fallback when DOI is missing.
-- Add more publisher-specific DOI fallbacks.
-- Replace local storage with Supabase.
-- Add login, reports, and moderation.
-
 ## Supabase
 
 Cloud backend setup files are in:
@@ -42,7 +37,16 @@ Cloud backend setup files are in:
 - `supabase/migrations/`
 - `docs/supabase-setup.md`
 
+The extension uses `src/config/supabase.js` for the public client URL and publishable key. Do not add a Supabase `service_role` key to the extension.
+
 ## Web Prototypes
 
 - `web/trending.html`: public page for most discussed papers, top rated papers, and hot comments.
 - `web/admin.html`: mock moderation dashboard for comments and reports.
+
+## Next Milestones
+
+- Add a report button for comments.
+- Connect the public trending page to Supabase views.
+- Connect the admin dashboard to Supabase moderation tables.
+- Add OAuth sign-in.
