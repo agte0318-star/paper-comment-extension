@@ -5,6 +5,7 @@ const root = path.resolve(__dirname, "..");
 const requiredFiles = [
   "manifest.json",
   "src/content/detectPaper.js",
+  "src/config/supabase.example.js",
   "src/moderation/blocklist.js",
   "src/storage/localComments.js",
   "src/content/index.js",
@@ -15,6 +16,7 @@ const requiredFiles = [
   "README.md",
   "docs/privacy-policy.md",
   "docs/store-listing.md",
+  "docs/supabase-setup.md",
   "docs/web-prototype.md",
   "docs/product-spec.md",
   "docs/roadmap.md",
@@ -24,7 +26,9 @@ const requiredFiles = [
   "web/admin.html",
   "web/styles.css",
   "web/mock-data.js",
-  "web/app.js"
+  "web/app.js",
+  "supabase/migrations/001_initial_schema.sql",
+  "supabase/migrations/002_summary_views.sql"
 ];
 
 let hasError = false;

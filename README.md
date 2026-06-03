@@ -35,6 +35,13 @@ Local v0.1 prototype for a browser extension that shows a paper-focused comment 
 - Replace local storage with Supabase.
 - Add login, reports, and moderation.
 
+## Supabase
+
+Cloud backend setup files are in:
+
+- `supabase/migrations/`
+- `docs/supabase-setup.md`
+
 ## Web Prototypes
 
 - `web/trending.html`: public page for most discussed papers, top rated papers, and hot comments.
