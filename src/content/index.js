@@ -82,11 +82,24 @@
   function getCommunityRatingText() {
     const summary = state.paperRatingSummary;
     if (!summary || !summary.count || !Number.isFinite(Number(summary.average))) {
-      return "No ratings yet";
+      return "No ratings";
     }
 
     const label = summary.count === 1 ? "rating" : "ratings";
-    return `Average rating: ${Number(summary.average).toFixed(1)}/10 - ${summary.count} ${label}`;
+    return `${summary.count} ${label}`;
+  }
+
+  function getCommunityRatingScore() {
+    const summary = state.paperRatingSummary;
+    if (!summary || !summary.count || !Number.isFinite(Number(summary.average))) {
+      return "--";
+    }
+    return Number(summary.average).toFixed(1);
+  }
+
+  function getUserLabel() {
+    const email = state.currentUser?.email || "User";
+    return email.split("@")[0] || "User";
   }
 
   function getCommentRatingAverage(comment) {
@@ -142,8 +155,6 @@
 
     const panel = createElement("aside", { className: "pce-panel" });
     panel.appendChild(renderHeader());
-    const authPanel = renderAuthPanel();
-    if (authPanel) panel.appendChild(authPanel);
     panel.appendChild(renderPaperRating());
     panel.appendChild(renderListToolbar());
     panel.appendChild(renderCommentList());
@@ -152,47 +163,22 @@
     if (state.authModalOpen) root.appendChild(renderAuthModal());
   }
 
-  function renderAuthPanel() {
+  function renderAuthChip() {
     if (!isCloudMode()) return null;
 
-    const section = createElement("section", { className: "pce-auth" });
-    if (state.currentUser) {
-      const label = createElement("div", { className: "pce-auth-label" });
-      label.append(
-        createElement("span", { className: "pce-auth-title", text: "Cloud sync" }),
-        createElement("span", { className: "pce-auth-subtitle", text: state.currentUser.email || "Signed in" })
-      );
-      const signOut = createElement("button", {
-        className: "pce-auth-button",
-        text: "Sign out",
-        attrs: { type: "button" }
-      });
-      signOut.addEventListener("click", async () => {
-        await getDataStore().signOut();
-        state.authMessage = "";
-        state.authModalOpen = false;
-        await loadData();
-      });
-      section.append(label, signOut);
-      return section;
-    }
-
-    const label = createElement("div", { className: "pce-auth-label" });
-    label.append(
-      createElement("span", { className: "pce-auth-title", text: "Cloud comments" }),
-      createElement("span", { className: "pce-auth-subtitle", text: "Sign in to post, rate, and like." })
-    );
-    const openButton = createElement("button", {
-      className: "pce-auth-button is-primary",
-      text: "Sign in",
-      attrs: { type: "button" }
+    const chip = createElement("button", {
+      className: state.currentUser ? "pce-auth-chip is-user" : "pce-auth-chip",
+      text: state.currentUser ? getUserLabel() : "Sign in",
+      attrs: {
+        type: "button",
+        title: state.currentUser?.email || "Sign in"
+      }
     });
-    openButton.addEventListener("click", () => {
+    chip.addEventListener("click", () => {
       state.authModalOpen = true;
       render();
     });
-    section.append(label, openButton);
-    return section;
+    return chip;
   }
 
   function renderAuthModal() {
@@ -204,8 +190,11 @@
     const header = createElement("div", { className: "pce-auth-dialog-header" });
     const title = createElement("div", { className: "pce-auth-dialog-title" });
     title.append(
-      createElement("span", { className: "pce-auth-title", text: "Sign in" }),
-      createElement("span", { className: "pce-auth-subtitle", text: "Use cloud comments across papers." })
+      createElement("span", { className: "pce-auth-title", text: state.currentUser ? "Account" : "Sign in" }),
+      createElement("span", {
+        className: "pce-auth-subtitle",
+        text: state.currentUser?.email || "Use cloud comments across papers."
+      })
     );
     const close = createElement("button", {
       className: "pce-auth-icon-button",
@@ -218,6 +207,31 @@
       render();
     });
     header.append(title, close);
+
+    if (state.currentUser) {
+      const actions = createElement("div", { className: "pce-auth-actions" });
+      const signOut = createElement("button", {
+        className: "pce-auth-button",
+        text: "Sign out",
+        attrs: { type: "button" }
+      });
+      signOut.addEventListener("click", async () => {
+        await getDataStore().signOut();
+        state.authMessage = "";
+        state.authModalOpen = false;
+        await loadData();
+      });
+      actions.append(signOut);
+      dialog.append(header, actions);
+      overlay.appendChild(dialog);
+      overlay.addEventListener("click", (event) => {
+        if (event.target !== overlay) return;
+        state.authModalOpen = false;
+        state.authMessage = "";
+        render();
+      });
+      return overlay;
+    }
 
     const form = createElement("form", { className: "pce-auth-form" });
     const email = createElement("input", {
@@ -344,7 +358,9 @@
     const label = createElement("div", { className: "pce-kicker", text: "Paper Comments" });
     const title = createElement("h2", { className: "pce-title", text: paper.title || paper.key });
     const meta = createElement("div", { className: "pce-meta", text: paper.key });
+    const authChip = renderAuthChip();
     header.append(close, label, title, meta);
+    if (authChip) header.appendChild(authChip);
     return header;
   }
 
@@ -355,16 +371,18 @@
       attrs: { type: "button" }
     });
     const left = createElement("div", { className: "pce-rating-toggle-left" });
+    const scoreLine = createElement("div", { className: "pce-rating-score-line" });
+    scoreLine.append(
+      createElement("span", { className: "pce-rating-score", text: getCommunityRatingScore() }),
+      createElement("span", { className: "pce-rating-scale", text: "/10" })
+    );
     left.append(
-      createElement("span", { className: "pce-rating-heading", text: "Article rating" }),
-      createElement("span", {
-        className: "pce-rating-subtitle",
-        text: getCommunityRatingText()
-      })
+      scoreLine,
+      createElement("span", { className: "pce-rating-count", text: getCommunityRatingText() })
     );
     const right = createElement("span", {
       className: "pce-rating-chevron",
-      text: state.ratingOpen ? "Collapse" : "Rate"
+      text: state.ratingOpen ? "Done" : (state.paperRating ? "Edit" : "Rate")
     });
     summary.append(left, right);
     summary.addEventListener("click", () => {
