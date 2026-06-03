@@ -191,6 +191,15 @@
     return Number(summary.average).toFixed(1);
   }
 
+  function getRatingMood(value) {
+    const score = Number(value);
+    if (score >= 9) return "Essential";
+    if (score >= 8) return "Strong";
+    if (score >= 6) return "Solid";
+    if (score >= 4) return "Mixed";
+    return "Weak";
+  }
+
   function getUserLabel() {
     const email = state.currentUser?.email || "User";
     return email.split("@")[0] || "User";
@@ -498,8 +507,29 @@
     const form = createElement("form", { className: "pce-rating-form" });
     const disabled = !state.canUpdateRating || !canWriteCloudData();
     const currentValue = getRatingAverage() || 5;
+    const hero = createElement("div", { className: "pce-rate-picker" });
+    const current = createElement("div", { className: "pce-rate-current" });
+    const currentScore = createElement("strong", { className: "pce-rate-current-score", text: String(Math.round(Number(currentValue))) });
+    const currentScale = createElement("span", { className: "pce-rate-current-scale", text: "/10" });
+    const currentMood = createElement("span", { className: "pce-rate-current-mood", text: getRatingMood(currentValue) });
+    current.append(currentScore, currentScale, currentMood);
+
+    const quick = createElement("div", { className: "pce-rate-quick" });
+    const quickButtons = [];
+    for (let score = 1; score <= 10; score += 1) {
+      const button = createElement("button", {
+        className: score === Math.round(Number(currentValue)) ? "pce-rate-chip is-selected" : "pce-rate-chip",
+        text: String(score),
+        attrs: { type: "button", ...(disabled ? { disabled: "disabled" } : {}) }
+      });
+      quickButtons.push(button);
+      quick.appendChild(button);
+    }
+
+    hero.append(current, quick);
+    form.appendChild(hero);
+
     const row = createElement("label", { className: "pce-rating-row pce-rating-row-single" });
-    const label = createElement("span", { className: "pce-rating-label", text: "Overall score" });
     const input = createElement("input", {
       className: "pce-rating-input",
       attrs: {
@@ -516,10 +546,21 @@
       className: "pce-rating-value",
       text: String(Math.round(Number(currentValue)))
     });
-    input.addEventListener("input", () => {
-      output.textContent = input.value;
+    function setRatingValue(value) {
+      const next = String(Math.min(10, Math.max(1, Number(value))));
+      input.value = next;
+      output.textContent = next;
+      currentScore.textContent = next;
+      currentMood.textContent = getRatingMood(next);
+      quickButtons.forEach((button) => {
+        button.classList.toggle("is-selected", button.textContent === next);
+      });
+    }
+    input.addEventListener("input", () => setRatingValue(input.value));
+    quickButtons.forEach((button) => {
+      button.addEventListener("click", () => setRatingValue(button.textContent));
     });
-    row.append(label, input, output);
+    row.append(input, output);
     form.appendChild(row);
 
     const message = createElement("div", {
@@ -538,7 +579,7 @@
     }
     const submit = createElement("button", {
       className: "pce-submit",
-      text: state.paperRating ? "Update rating" : "Save rating",
+      text: state.paperRating ? "Update score" : "Save score",
       attrs: { type: "submit" }
     });
     submit.disabled = disabled;

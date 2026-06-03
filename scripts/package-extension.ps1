@@ -28,6 +28,11 @@ foreach ($item in $include) {
   }
 }
 
+$iconSourceInPackage = Join-Path $stagingDir "public\icons\icon-source.png"
+if (Test-Path $iconSourceInPackage) {
+  Remove-Item -LiteralPath $iconSourceInPackage -Force
+}
+
 if (Test-Path $zipPath) {
   Remove-Item -LiteralPath $zipPath -Force
 }
