@@ -16,6 +16,7 @@
 - Basic profile table.
 - Shared overall article ratings.
 - Comment likes.
+- Public per-paper web discussion page.
 
 ## v0.3 Moderated Beta
 

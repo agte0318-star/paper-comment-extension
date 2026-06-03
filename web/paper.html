@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Paper Discussion | Paper Comment Extension</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body data-page="paper">
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./trending.html" aria-label="Paper Comment Extension">
+          <span class="brand-mark">PC</span>
+          <span>Paper Comment Extension</span>
+        </a>
+        <nav class="nav" aria-label="Primary navigation">
+          <a href="./trending.html">Trending</a>
+          <a href="../privacy-policy.html">Privacy</a>
+        </nav>
+      </header>
+
+      <main class="page">
+        <section class="paper-detail" data-paper-detail></section>
+        <section class="section grid-two paper-detail-grid">
+          <div>
+            <div class="section-title">
+              <h2>Discussion</h2>
+              <span class="status" data-paper-comment-status>Loading comments...</span>
+            </div>
+            <div class="comment-list" data-paper-comments></div>
+          </div>
+
+          <aside class="section">
+            <div class="section-title">
+              <h2>Share</h2>
+              <span class="status">Public page</span>
+            </div>
+            <div class="share-panel">
+              <p class="subtle">Send this page to invite discussion without requiring the browser extension.</p>
+              <button class="btn primary" type="button" data-copy-paper-link>Copy link</button>
+              <div class="status" data-copy-status></div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="./mock-data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

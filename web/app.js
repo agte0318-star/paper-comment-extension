@@ -181,6 +181,16 @@ function setStatus(selector, message) {
   if (element) element.textContent = message;
 }
 
+function getPaperDetailUrl(paper) {
+  const value = paper.id || paper.paperKey;
+  return `./paper.html?id=${encodeURIComponent(value)}`;
+}
+
+function getPaperParam() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id") || params.get("key") || "";
+}
+
 function normalizePaper(row) {
   return {
     id: row.id,
@@ -212,6 +222,22 @@ function normalizeHotComment(row) {
     ratingScore: Number(row.author_rating || 0),
     status: row.status || "visible",
     reportCount: Number(row.report_count || 0),
+    createdAt: row.created_at
+  };
+}
+
+function normalizePaperComment(row, ratingByUser = new Map()) {
+  const profile = row.profiles || {};
+  const ratingScore = ratingByUser.get(row.user_id) || 0;
+  return {
+    id: row.id,
+    paperId: row.paper_id,
+    author: profile.display_name || "Reader",
+    content: row.content || "",
+    likeCount: Number(row.like_count || 0),
+    ratingScore: Number(ratingScore || 0),
+    status: row.status || "visible",
+    reportCount: 0,
     createdAt: row.created_at
   };
 }
@@ -292,17 +318,70 @@ async function loadAdminData() {
   }
 }
 
+function getFallbackPaperData() {
+  const data = getFallbackData();
+  const id = getPaperParam();
+  const paper = data.papers.find((item) => item.id === id || item.paperKey === id) || data.papers[0];
+  return {
+    generatedAt: data.generatedAt,
+    paper,
+    comments: data.comments.filter((comment) => comment.paperId === paper.id)
+  };
+}
+
+async function loadPaperData() {
+  const paperParam = getPaperParam();
+  if (!paperParam) {
+    pageSource = "empty";
+    return { paper: null, comments: [] };
+  }
+
+  try {
+    const paperFilter = paperParam.startsWith("doi:") || paperParam.startsWith("arxiv:") || paperParam.startsWith("pubmed:") || paperParam.startsWith("pmc:")
+      ? `paper_key=eq.${encodeURIComponent(paperParam)}`
+      : `id=eq.${encodeURIComponent(paperParam)}`;
+    const paperRows = await supabaseGet(`/rest/v1/paper_summary?select=*&${paperFilter}&limit=1`);
+    const paper = paperRows[0] ? normalizePaper(paperRows[0]) : null;
+
+    if (!paper) {
+      const fallback = getFallbackPaperData();
+      if (fallback.paper && (fallback.paper.id === paperParam || fallback.paper.paperKey === paperParam)) {
+        pageSource = "sample";
+        return fallback;
+      }
+      pageSource = "empty";
+      return { paper: null, comments: [] };
+    }
+
+    const [commentRows, ratingRows] = await Promise.all([
+      supabaseGet(`/rest/v1/comments?paper_id=eq.${encodeURIComponent(paper.id)}&status=eq.visible&select=id,paper_id,user_id,content,like_count,status,created_at,profiles(display_name)&order=like_count.desc,created_at.desc&limit=50`),
+      supabaseGet(`/rest/v1/ratings?paper_id=eq.${encodeURIComponent(paper.id)}&select=user_id,overall_score`)
+    ]);
+    const ratingByUser = new Map(ratingRows.map((row) => [row.user_id, row.overall_score]));
+    pageSource = "live";
+    return {
+      paper,
+      comments: commentRows.map((comment) => normalizePaperComment(comment, ratingByUser))
+    };
+  } catch (error) {
+    pageSource = "sample";
+    console.warn("Using sample paper data because Supabase could not be loaded:", error);
+    return getFallbackPaperData();
+  }
+}
+
 function renderPaperItem(paper) {
   const rating = paper.ratingCount ? `${paper.ratingAverage.toFixed(1)}/10` : "No rating";
   return `
     <article class="paper-item">
       <div>
-        <h3 class="paper-title"><a href="${escapeHtml(paper.url)}" target="_blank" rel="noreferrer">${escapeHtml(paper.title)}</a></h3>
+        <h3 class="paper-title"><a href="${escapeHtml(getPaperDetailUrl(paper))}">${escapeHtml(paper.title)}</a></h3>
         <div class="paper-meta">
           <span>${escapeHtml(paper.journal)}</span>
           <span>${escapeHtml(paper.publisher)}</span>
           ${paper.year ? `<span>${escapeHtml(paper.year)}</span>` : ""}
           <span>${escapeHtml(paper.paperKey)}</span>
+          <a class="inline-link" href="${escapeHtml(paper.url)}" target="_blank" rel="noreferrer">Open paper</a>
         </div>
       </div>
       <div class="paper-stats" aria-label="Paper stats">
@@ -331,10 +410,61 @@ function renderCommentItem(comment, data) {
       <p class="comment-body">${escapeHtml(comment.content)}</p>
       <div class="paper-meta">
         <span>${escapeHtml(journal)}</span>
-        <span>${escapeHtml(paperTitle)}</span>
+        ${comment.paperId ? `<a class="inline-link" href="./paper.html?id=${encodeURIComponent(comment.paperId)}">${escapeHtml(paperTitle)}</a>` : `<span>${escapeHtml(paperTitle)}</span>`}
       </div>
     </article>
   `;
+}
+
+function renderPaperHero(paper) {
+  if (!paper) {
+    return createEmptyState("This paper discussion page could not be found yet.");
+  }
+  const rating = paper.ratingCount ? paper.ratingAverage.toFixed(1) : "--";
+  return `
+    <div class="paper-hero">
+      <div>
+        <p class="eyebrow">Paper discussion</p>
+        <h1>${escapeHtml(paper.title)}</h1>
+        <div class="paper-meta">
+          <span>${escapeHtml(paper.journal)}</span>
+          <span>${escapeHtml(paper.publisher)}</span>
+          ${paper.year ? `<span>${escapeHtml(paper.year)}</span>` : ""}
+          <span>${escapeHtml(paper.paperKey)}</span>
+        </div>
+      </div>
+      <div class="paper-score-card" aria-label="Paper rating">
+        <div class="paper-score">${escapeHtml(rating)}</div>
+        <div class="paper-score-scale">/10</div>
+        <div class="status">${formatNumber(paper.ratingCount)} ratings</div>
+      </div>
+    </div>
+    <div class="paper-detail-actions">
+      <a class="btn primary" href="${escapeHtml(paper.url)}" target="_blank" rel="noreferrer">Open paper</a>
+      <a class="btn" href="./trending.html">Back to trending</a>
+    </div>
+  `;
+}
+
+function renderPaperPage() {
+  const data = pageData;
+  document.querySelector("[data-paper-detail]").innerHTML = renderPaperHero(data.paper);
+  document.querySelector("[data-paper-comment-status]").textContent = data.comments.length
+    ? `${formatNumber(data.comments.length)} public comments`
+    : "No comments yet";
+  document.querySelector("[data-paper-comments]").innerHTML = data.comments.length
+    ? [...data.comments].sort(byLikes).map((comment) => renderCommentItem(comment, { papers: data.paper ? [data.paper] : [] })).join("")
+    : createEmptyState("No public comments yet. Open this paper with the extension to start the discussion.");
+
+  document.querySelector("[data-copy-paper-link]")?.addEventListener("click", async () => {
+    const status = document.querySelector("[data-copy-status]");
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      status.textContent = "Copied.";
+    } catch (error) {
+      status.textContent = window.location.href;
+    }
+  });
 }
 
 function renderTrendingPage() {
@@ -574,6 +704,10 @@ async function initializePage() {
   }
   if (document.body.dataset.page === "admin") {
     await initializeAdminPage();
+  }
+  if (document.body.dataset.page === "paper") {
+    pageData = await loadPaperData();
+    renderPaperPage();
   }
 }
 

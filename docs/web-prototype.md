@@ -5,6 +5,7 @@ The `web/` directory contains the public paper activity page and a read-only mod
 ## Pages
 
 - `web/trending.html`: public overview of most discussed papers, top rated papers, and hot comments.
+- `web/paper.html`: public per-paper discussion page for shareable paper-level ratings and comments.
 - `web/admin.html`: read-only moderation preview for visible comments and future admin workflows.
 
 ## Current Data Source

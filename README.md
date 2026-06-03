@@ -42,6 +42,7 @@ The extension uses `src/config/supabase.js` for the public client URL and publis
 ## Web Pages
 
 - `web/trending.html`: public page for most discussed papers, top rated papers, and hot comments. It reads the Supabase `paper_summary` and `hot_comments` views.
+- `web/paper.html`: public per-paper discussion page for sharing ratings and comments outside the extension.
 - `web/admin.html`: admin-gated read-only moderation preview. The signed-in Supabase profile must have `role = 'admin'` and `status = 'active'`.
 
 ## Next Milestones
