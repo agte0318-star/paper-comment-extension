@@ -1,34 +1,26 @@
-# Web Prototype
+# Web Pages
 
-The `web/` directory contains static prototypes for the public paper summary page and the future moderation dashboard.
+The `web/` directory contains the public paper activity page and a read-only moderation preview.
 
 ## Pages
 
 - `web/trending.html`: public overview of most discussed papers, top rated papers, and hot comments.
-- `web/admin.html`: moderation dashboard for comments and reports.
+- `web/admin.html`: read-only moderation preview for visible comments and future admin workflows.
 
 ## Current Data Source
 
-The pages use `web/mock-data.js`. No real user data is loaded yet.
+The pages try to load live Supabase data first:
 
-## Future Supabase Integration
+- `paper_summary`
+- `hot_comments`
+- visible rows from `comments`
+- public rows from `profiles`
 
-Replace `web/mock-data.js` with queries against:
+If Supabase cannot be reached, the pages fall back to `web/mock-data.js` so the layout remains inspectable during development.
 
-- `papers`
-- `comments`
-- `ratings`
-- `comment_likes`
-- `reports`
-- `profiles`
+## Admin Boundary
 
-The current UI already reflects the expected information architecture:
-
-- public paper rankings
-- top comments
-- comment moderation
-- report queue
-- admin metrics
+The public GitHub Pages admin preview does not perform persistent moderation actions. Hiding, deleting, resolving reports, and reading restricted report queues should require a future authenticated admin flow.
 
 ## Extension Package
 

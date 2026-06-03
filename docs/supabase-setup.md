@@ -80,4 +80,4 @@ Summary views:
 
 ## 7. Current Status
 
-The SQL backend is ready and the extension can use Supabase for email/password sign-in, shared comments, shared ratings, and comment likes. The next development step is to connect the public trending page and admin dashboard to the Supabase views and moderation tables.
+The SQL backend is ready and the extension can use Supabase for email/password sign-in, shared comments, shared ratings, and comment likes. The public trending page reads Supabase summary views. The admin page is currently a read-only preview; persistent moderation actions require a future authenticated admin flow.

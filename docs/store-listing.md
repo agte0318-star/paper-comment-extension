@@ -34,7 +34,7 @@ Current limitations:
 
 - This is an early beta, so moderation tools are still being expanded.
 - OAuth login is not enabled yet.
-- Public trending and admin pages are prototype pages until they are connected to Supabase views.
+- Admin moderation actions are not persistent yet and will require a future admin sign-in flow.
 
 ## Suggested Category
 

@@ -39,14 +39,13 @@ Cloud backend setup files are in:
 
 The extension uses `src/config/supabase.js` for the public client URL and publishable key. Do not add a Supabase `service_role` key to the extension.
 
-## Web Prototypes
+## Web Pages
 
-- `web/trending.html`: public page for most discussed papers, top rated papers, and hot comments.
-- `web/admin.html`: mock moderation dashboard for comments and reports.
+- `web/trending.html`: public page for most discussed papers, top rated papers, and hot comments. It reads the Supabase `paper_summary` and `hot_comments` views.
+- `web/admin.html`: read-only moderation preview for visible comments. Persistent moderation actions require a future admin sign-in flow.
 
 ## Next Milestones
 
 - Add a report button for comments.
-- Connect the public trending page to Supabase views.
-- Connect the admin dashboard to Supabase moderation tables.
+- Add admin sign-in for persistent hide/delete/report actions.
 - Add OAuth sign-in.

@@ -20,8 +20,8 @@
 ## v0.3 Moderated Beta
 
 - Connect report button to Supabase.
-- Connect admin moderation view to Supabase.
-- Connect public trending page to Supabase summary views.
+- Add authenticated admin moderation actions.
+- Add authenticated reports queue.
 - Expand user profile controls.
 - Add OAuth sign-in.
 
