@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Trending Papers | Paper Comment Extension</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body data-page="trending">
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./trending.html" aria-label="Paper Comment Extension">
+          <span class="brand-mark">PC</span>
+          <span>Paper Comment Extension</span>
+        </a>
+        <nav class="nav" aria-label="Primary navigation">
+          <a class="active" href="./trending.html">Trending</a>
+          <a href="./admin.html">Admin</a>
+          <a href="../privacy-policy.html">Privacy</a>
+        </nav>
+      </header>
+
+      <main class="page">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Public overview prototype</p>
+            <h1>Track the papers receiving the most discussion and the strongest ratings.</h1>
+            <p class="subtle">
+              This page uses mock data for now. After Supabase integration, it will summarize real comments, ratings, likes, and activity from the extension.
+            </p>
+          </div>
+          <div class="toolbar">
+            <select class="select" aria-label="Time range">
+              <option>Last 7 days</option>
+              <option>Last 30 days</option>
+              <option>All time</option>
+            </select>
+          </div>
+        </div>
+
+        <section class="metrics" data-metrics aria-label="Activity metrics"></section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>Most Discussed Papers</h2>
+            <span class="status">Ranked by comment count</span>
+          </div>
+          <div class="paper-list" data-most-discussed></div>
+        </section>
+
+        <section class="section grid-two">
+          <div>
+            <div class="section-title">
+              <h2>Top Rated Papers</h2>
+              <span class="status">Average article score</span>
+            </div>
+            <div class="paper-list" data-top-rated></div>
+          </div>
+
+          <div>
+            <div class="section-title">
+              <h2>Hot Comments</h2>
+              <span class="status">Most liked comments</span>
+            </div>
+            <div class="comment-list" data-hot-comments></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./mock-data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

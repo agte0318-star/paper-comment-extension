@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard | Paper Comment Extension</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body data-page="admin">
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./trending.html" aria-label="Paper Comment Extension">
+          <span class="brand-mark">PC</span>
+          <span>Paper Comment Extension</span>
+        </a>
+        <nav class="nav" aria-label="Primary navigation">
+          <a href="./trending.html">Trending</a>
+          <a class="active" href="./admin.html">Admin</a>
+          <a href="../privacy-policy.html">Privacy</a>
+        </nav>
+      </header>
+
+      <main class="page">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Admin prototype</p>
+            <h1>Moderate comments, review reports, and monitor paper activity.</h1>
+            <p class="subtle">
+              This dashboard currently uses mock data. The action buttons show the moderation workflow that will become persistent after Supabase integration.
+            </p>
+          </div>
+          <div class="toolbar">
+            <input class="search" type="search" placeholder="Search DOI, title, author, or comment" data-admin-search>
+            <select class="select" data-admin-status aria-label="Comment status">
+              <option value="all">All statuses</option>
+              <option value="visible">Visible</option>
+              <option value="hidden">Hidden</option>
+              <option value="deleted">Deleted</option>
+            </select>
+          </div>
+        </div>
+
+        <section class="metrics" data-admin-metrics aria-label="Admin metrics"></section>
+
+        <div class="admin-grid">
+          <section class="section">
+            <div class="section-title">
+              <h2>Comment Moderation</h2>
+              <span class="status" data-admin-output>Mock actions are not persisted yet.</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Author</th>
+                    <th>Comment</th>
+                    <th>Likes</th>
+                    <th>Reports</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody data-admin-comments></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-title">
+              <h2>Reports Queue</h2>
+              <span class="status">Open and reviewing reports</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Reason</th>
+                    <th>Comment Author</th>
+                    <th>Details</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody data-admin-reports></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script src="./mock-data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

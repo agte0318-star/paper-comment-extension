@@ -15,10 +15,16 @@ const requiredFiles = [
   "README.md",
   "docs/privacy-policy.md",
   "docs/store-listing.md",
+  "docs/web-prototype.md",
   "docs/product-spec.md",
   "docs/roadmap.md",
   "docs/copyright-policy.md",
-  "docs/database-plan.md"
+  "docs/database-plan.md",
+  "web/trending.html",
+  "web/admin.html",
+  "web/styles.css",
+  "web/mock-data.js",
+  "web/app.js"
 ];
 
 let hasError = false;

@@ -34,3 +34,8 @@ Local v0.1 prototype for a browser extension that shows a paper-focused comment 
 - Add more publisher-specific DOI fallbacks.
 - Replace local storage with Supabase.
 - Add login, reports, and moderation.
+
+## Web Prototypes
+
+- `web/trending.html`: public page for most discussed papers, top rated papers, and hot comments.
+- `web/admin.html`: mock moderation dashboard for comments and reports.
