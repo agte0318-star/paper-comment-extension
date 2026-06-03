@@ -5,7 +5,7 @@ Local v0.1 prototype for a browser extension that shows a paper-focused comment 
 ## v0.1 Scope
 
 - Detect arXiv papers.
-- Detect DOI-based papers on a broader set of SCI publisher, journal, preprint, DOI, and indexing sites.
+- Detect DOI-based papers on a broader set of SCI publisher, journal, preprint, DOI, and indexing sites, including Wiley journal subdomains and SciOpen/Science China platforms.
 - Inject a right-side comment sidebar.
 - Save comments locally with `chrome.storage.local`.
 - Save one overall article rating per local user and paper.

@@ -26,7 +26,7 @@ The extension intentionally uses an allowlist of scholarly domains rather than a
 - PubMed and PMC
 - bioRxiv and medRxiv
 - Springer and Springer Nature
-- Wiley Online Library
+- Wiley Online Library, including journal subdomains such as Advanced Materials
 - Science / AAAS
 - ACS Publications
 - Elsevier / ScienceDirect
@@ -61,6 +61,7 @@ The extension intentionally uses an allowlist of scholarly domains rather than a
 - BMJ, JAMA Network, NEJM, The Lancet, Karger, Thieme, Liebert, LWW, Wolters Kluwer
 - J-STAGE, SciELO, JCI, Journal of Neuroscience, diabetes journals, endocrine journals, AACR, ASCO
 - Copernicus, AGU, GeoScienceWorld, SPIE, Optica, World Scientific, Emerald, IOS Press, Brill
+- SciOpen, Science China, Science Engine, CPS journals, and other China-based natural science journal platforms including Nano Research entry points
 
 ## Sidebar Areas
 

@@ -176,7 +176,13 @@
       "optica.org",
       "worldscientific.com",
       "emerald.com",
-      "microbiologyresearch.org"
+      "microbiologyresearch.org",
+      "sciopen.com",
+      "sciengine.com",
+      "sciencechina.com",
+      "sciencechina.cn",
+      "cpsjournals.cn",
+      "ingentaconnect.com"
     ];
 
     return domains.some((domain) => host === domain || host.endsWith(`.${domain}`));
@@ -284,7 +290,13 @@
       ["optica.org", "optica"],
       ["worldscientific.com", "world-scientific"],
       ["emerald.com", "emerald"],
-      ["microbiologyresearch.org", "microbiology-society"]
+      ["microbiologyresearch.org", "microbiology-society"],
+      ["sciopen.com", "sciopen"],
+      ["sciengine.com", "sciengine"],
+      ["sciencechina.com", "science-china"],
+      ["sciencechina.cn", "science-china"],
+      ["cpsjournals.cn", "cps"],
+      ["ingentaconnect.com", "ingenta"]
     ];
 
     const match = sourceByDomain.find(([domain]) => host === domain || host.endsWith(`.${domain}`));
