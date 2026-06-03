@@ -381,8 +381,8 @@
       createElement("span", { className: "pce-rating-count", text: getCommunityRatingText() })
     );
     const right = createElement("span", {
-      className: "pce-rating-chevron",
-      text: state.ratingOpen ? "Done" : (state.paperRating ? "Edit" : "Rate")
+      className: state.ratingOpen ? "pce-rating-chevron is-open" : "pce-rating-chevron",
+      text: state.ratingOpen ? "Close" : (state.paperRating ? "Edit" : "Rate")
     });
     summary.append(left, right);
     summary.addEventListener("click", () => {
@@ -432,10 +432,14 @@
     });
     if (disabled && !state.ratingMessage) message.classList.add("is-visible");
 
-    const footer = createElement("div", { className: "pce-rating-footer" });
-    footer.appendChild(createElement("span", {
-      text: state.paperRating ? `Your score: ${getRatingAverage()}/10` : "Rate this paper as a whole."
-    }));
+    const footer = createElement("div", {
+      className: state.paperRating ? "pce-rating-footer" : "pce-rating-footer pce-rating-footer-compact"
+    });
+    if (state.paperRating) {
+      footer.appendChild(createElement("span", {
+        text: `Your score: ${getRatingAverage()}/10`
+      }));
+    }
     const submit = createElement("button", {
       className: "pce-submit",
       text: state.paperRating ? "Update rating" : "Save rating",

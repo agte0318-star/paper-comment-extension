@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Paper Comment Extension",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Rate and comment on academic papers while reading them.",
   "permissions": ["storage"],
   "host_permissions": [
