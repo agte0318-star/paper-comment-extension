@@ -1,0 +1,77 @@
+{
+  "manifest_version": 3,
+  "name": "Paper Comment Extension",
+  "version": "0.1.0",
+  "description": "Rate and comment on academic papers while reading them.",
+  "permissions": ["storage"],
+  "icons": {
+    "16": "public/icons/icon-16.png",
+    "48": "public/icons/icon-48.png",
+    "128": "public/icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "Paper Comments",
+    "default_icon": {
+      "16": "public/icons/icon-16.png",
+      "48": "public/icons/icon-48.png",
+      "128": "public/icons/icon-128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://arxiv.org/abs/*",
+        "https://arxiv.org/pdf/*",
+        "https://pubmed.ncbi.nlm.nih.gov/*",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/*",
+        "https://www.biorxiv.org/content/*",
+        "https://www.medrxiv.org/content/*",
+        "https://www.nature.com/articles/*",
+        "https://link.springer.com/article/*",
+        "https://link.springer.com/chapter/*",
+        "https://onlinelibrary.wiley.com/doi/*",
+        "https://www.science.org/doi/*",
+        "https://pubs.acs.org/doi/*",
+        "https://www.sciencedirect.com/science/article/*",
+        "https://www.cell.com/*/fulltext/*",
+        "https://www.cell.com/*/abstract/*",
+        "https://www.tandfonline.com/doi/*",
+        "https://academic.oup.com/*",
+        "https://www.cambridge.org/core/journals/*",
+        "https://pubs.rsc.org/en/content/articlehtml/*",
+        "https://pubs.rsc.org/en/content/articlelanding/*",
+        "https://iopscience.iop.org/article/*",
+        "https://pubs.aip.org/*",
+        "https://journals.aps.org/*/abstract/*",
+        "https://journals.aps.org/*/pdf/*",
+        "https://ieeexplore.ieee.org/document/*",
+        "https://dl.acm.org/doi/*",
+        "https://www.pnas.org/doi/*",
+        "https://www.mdpi.com/*",
+        "https://www.frontiersin.org/journals/*/articles/*",
+        "https://journals.plos.org/*/article*",
+        "https://elifesciences.org/articles/*",
+        "https://royalsocietypublishing.org/doi/*",
+        "https://journals.sagepub.com/doi/*",
+        "https://www.annualreviews.org/doi/*",
+        "https://peerj.com/articles/*",
+        "https://www.hindawi.com/journals/*",
+        "https://portlandpress.com/*",
+        "https://journals.asm.org/doi/*",
+        "https://journals.physiology.org/doi/*",
+        "https://journals.ametsoc.org/view/journals/*",
+        "https://journals.uchicago.edu/doi/*",
+        "https://www.degruyter.com/document/doi/*",
+        "https://www.journals.elsevier.com/*"
+      ],
+      "js": [
+        "src/content/detectPaper.js",
+        "src/moderation/blocklist.js",
+        "src/storage/localComments.js",
+        "src/content/index.js"
+      ],
+      "css": ["src/content/sidebar.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
