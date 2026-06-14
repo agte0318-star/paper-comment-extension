@@ -6,6 +6,7 @@
   "scripts": {
     "check": "node scripts/check.js",
     "check:package": "node scripts/check-package.js",
+    "check:public-urls": "node scripts/check-public-urls.js",
     "check:release-ready": "node scripts/check-release-ready.js",
     "check:source-secrets": "node scripts/check-source-secrets.js",
     "capture:extension-screenshots": "node scripts/capture-extension-screenshots.js",

@@ -25,6 +25,7 @@ const requiredFiles = [
   "privacy-policy.html",
   "support.html",
   "scripts/check-package.js",
+  "scripts/check-public-urls.js",
   "scripts/check-release-ready.js",
   "scripts/check-source-secrets.js",
   "scripts/capture-extension-screenshots.js",
