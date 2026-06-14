@@ -52,6 +52,7 @@ Current candidate version: `0.5.5`
    - `npm.cmd run check:extension-auth-gates` verifies newest/popular sorting with demo comments.
 
 5. PDF detection flow
+   - Run `npm.cmd run check:popup-current-paper` to verify popup fallback discussion URLs for arXiv PDF, DOI PDFs, ScienceDirect PII PDFs, and generic PDFs.
    - arXiv PDF detected.
    - Wiley PDF or PDFDirect detected.
    - Springer content PDF detected.
@@ -115,6 +116,7 @@ npm.cmd run check:public-urls
 npm.cmd run check:public-web-render
 npm.cmd run check:extension-auth-gates
 npm.cmd run check:extension-demo-interactions
+npm.cmd run check:popup-current-paper
 npm.cmd run check:source-secrets
 npm.cmd run release:status
 npm.cmd run check:release-ready

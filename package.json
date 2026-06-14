@@ -8,6 +8,7 @@
     "check:extension-auth-gates": "node scripts/check-extension-auth-gates.js",
     "check:extension-demo-interactions": "node scripts/check-extension-demo-interactions.js",
     "check:package": "node scripts/check-package.js",
+    "check:popup-current-paper": "node scripts/check-popup-current-paper.js",
     "check:public-urls": "node scripts/check-public-urls.js",
     "check:public-web-render": "node scripts/check-public-web-render.js",
     "check:release-ready": "node scripts/check-release-ready.js",

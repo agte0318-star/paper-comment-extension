@@ -27,6 +27,7 @@ const requiredFiles = [
   "scripts/check-extension-auth-gates.js",
   "scripts/check-extension-demo-interactions.js",
   "scripts/check-package.js",
+  "scripts/check-popup-current-paper.js",
   "scripts/check-public-urls.js",
   "scripts/check-public-web-render.js",
   "scripts/check-release-ready.js",

@@ -22,6 +22,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Run `npm.cmd run check:public-web-render` after GitHub Pages deploys to confirm public pages render in a real browser and core public interactions work.
 - Run `npm.cmd run check:extension-auth-gates` to confirm signed-out extension actions open the correct sign-in modal and comment sorting works in a real browser with privacy-safe demo data.
 - Run `npm.cmd run check:extension-demo-interactions` to confirm signed-in rating, comment, one-comment-per-day, like, reply, report, and share-image flows work in a real browser with privacy-safe demo data.
+- Run `npm.cmd run check:popup-current-paper` to confirm the popup current-paper action builds correct fallback discussion URLs for PDF and PDF-viewer tabs.
 - Confirm `release/store-assets/<version>/reviewer-notes.md` exists for Chrome Web Store reviewer notes.
 - Open `release/store-assets/<version>/manual-test-links.html` as the central link page for manual QA.
 
@@ -79,6 +80,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Test an ACS PDF URL.
 - Test a ScienceDirect PDF or PII PDF URL.
 - Test one journal-hosted PDF without a DOI in the URL.
+- Run `npm.cmd run check:popup-current-paper` to verify the popup fallback discussion action for arXiv, DOI, PII, and generic PDF tabs.
 - When Chrome blocks sidebar injection, open the extension popup and click the current-paper discussion action.
 - Confirm the fallback discussion page uses DOI or arXiv ID when available.
 - Confirm the fallback uses a `pdf:` key only when no DOI, arXiv ID, PubMed ID, PMC ID, or PII can be found.
