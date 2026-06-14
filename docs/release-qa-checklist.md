@@ -19,6 +19,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Confirm `release:status` shows matching versions for `manifest.json`, `package.json`, the release zip, and the manual-test folder.
 - Confirm `release:status` shows `manual-test-results.md` metadata for the current version, release zip, and packaged manual-test folder.
 - Run `npm.cmd run check:public-urls` after pushing to GitHub to confirm the homepage, web app pages, privacy policy, and support page are publicly reachable.
+- Run `npm.cmd run check:public-web-render` after GitHub Pages deploys to confirm public pages render in a real browser and core public interactions work.
 - Confirm `release/store-assets/<version>/reviewer-notes.md` exists for Chrome Web Store reviewer notes.
 - Open `release/store-assets/<version>/manual-test-links.html` as the central link page for manual QA.
 
@@ -81,6 +82,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 ## 6. Public Web Pages
 
 - Run `npm.cmd run check:public-urls` and confirm all GitHub Pages URLs return `OK`.
+- Run `npm.cmd run check:public-web-render` and confirm trending search/sort, paper copy/share, and signed-out profile rendering pass.
 - Open `web/trending.html` through GitHub Pages.
 - Confirm trending papers, top-rated papers, and hot comments render.
 - Search for a paper.

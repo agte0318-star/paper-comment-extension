@@ -26,6 +26,7 @@ const requiredFiles = [
   "support.html",
   "scripts/check-package.js",
   "scripts/check-public-urls.js",
+  "scripts/check-public-web-render.js",
   "scripts/check-release-ready.js",
   "scripts/check-source-secrets.js",
   "scripts/capture-demo-interaction-screenshots.js",
