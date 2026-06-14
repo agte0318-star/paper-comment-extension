@@ -21,6 +21,7 @@ Current candidate version: `0.5.5`
    - Confirm the test emails if Supabase requires email confirmation.
    - Confirm one active admin account for admin-page testing.
    - Keep test passwords out of repo files, screenshots, and notes.
+   - Set live-test credentials only in the current terminal, then run `npm.cmd run check:live-account-flow`.
 
 2. Packaged extension test
    - Load `release/manual-test/paper-comment-extension-0.5.5` through `chrome://extensions`.
@@ -30,6 +31,7 @@ Current candidate version: `0.5.5`
 
 3. Account flow
    - Run `npm.cmd run check:extension-auth-gates` to verify signed-out Rate, comment, Like, Reply, and Report actions open sign-in prompts.
+   - Run `npm.cmd run check:live-account-flow` after creating real test accounts to verify email/password sign-in, password reset, optional sign-up, and optional active-admin status.
    - Signed-out rating, comment, like, reply, and report actions open the sign-in dialog.
    - Email/password sign-up works.
    - Email confirmation flow is understandable.
@@ -117,6 +119,7 @@ npm.cmd run check:public-web-render
 npm.cmd run check:extension-auth-gates
 npm.cmd run check:extension-demo-interactions
 npm.cmd run check:popup-current-paper
+npm.cmd run check:live-account-flow
 npm.cmd run check:source-secrets
 npm.cmd run release:status
 npm.cmd run check:release-ready
