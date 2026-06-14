@@ -15,6 +15,7 @@
         </a>
         <nav class="nav" aria-label="Primary navigation">
           <a href="./trending.html">Trending</a>
+          <a href="./profile.html">My Profile</a>
           <a class="active" href="./admin.html">Admin</a>
           <a href="../privacy-policy.html">Privacy</a>
         </nav>
@@ -23,10 +24,10 @@
       <main class="page">
         <div class="page-header">
           <div>
-            <p class="eyebrow">Admin preview</p>
-            <h1>Moderate comments, review reports, and monitor paper activity.</h1>
+            <p class="eyebrow">Admin review</p>
+            <h1>Moderate comments and replies, review reports, and monitor paper activity.</h1>
             <p class="subtle">
-              This dashboard now reads public visible comments from Supabase. Persistent moderation actions will be added behind admin sign-in.
+              This dashboard reads comments, replies, reports, users, and audit logs from Supabase. Moderation updates require an active admin account.
             </p>
           </div>
           <div class="toolbar" data-admin-toolbar hidden>
@@ -70,20 +71,107 @@
           <section class="section">
             <div class="section-title">
               <h2>Reports Queue</h2>
-              <span class="status">Open and reviewing reports</span>
+              <div class="toolbar inline-toolbar">
+                <input class="search" type="search" placeholder="Search reports" data-admin-report-search>
+                <select class="select" data-admin-report-status aria-label="Report status">
+                  <option value="active">Open + reviewing</option>
+                  <option value="all">All reports</option>
+                  <option value="open">Open</option>
+                  <option value="reviewing">Reviewing</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="dismissed">Dismissed</option>
+                </select>
+                <select class="select" data-admin-report-type aria-label="Report type">
+                  <option value="all">All types</option>
+                  <option value="comment">Comments</option>
+                  <option value="reply">Replies</option>
+                </select>
+              </div>
             </div>
             <div class="table-wrap">
               <table>
                 <thead>
                   <tr>
                     <th>Reason</th>
-                    <th>Comment Author</th>
+                    <th>Reported Comment</th>
                     <th>Details</th>
                     <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody data-admin-reports></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-title">
+              <h2>User Moderation</h2>
+              <div class="toolbar inline-toolbar">
+                <input class="search" type="search" placeholder="Search users" data-admin-user-search>
+                <select class="select" data-admin-user-status aria-label="User status">
+                  <option value="all">All statuses</option>
+                  <option value="active">Active</option>
+                  <option value="suspended">Suspended</option>
+                  <option value="deleted">Deleted</option>
+                </select>
+                <select class="select" data-admin-user-role aria-label="User role">
+                  <option value="all">All roles</option>
+                  <option value="user">Users</option>
+                  <option value="moderator">Moderators</option>
+                  <option value="admin">Admins</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Activity</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody data-admin-users></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="section" data-admin-user-detail-section hidden>
+            <div class="section-title">
+              <h2>User Detail</h2>
+              <span class="status" data-admin-user-detail-status>Select a user to review activity</span>
+            </div>
+            <div data-admin-user-detail></div>
+          </section>
+
+          <section class="section">
+            <div class="section-title">
+              <h2>Audit Trail</h2>
+              <div class="toolbar inline-toolbar">
+                <input class="search" type="search" placeholder="Search audit" data-admin-audit-search>
+                <select class="select" data-admin-audit-type aria-label="Audit action type">
+                  <option value="all">All actions</option>
+                  <option value="update_content_status">Content</option>
+                  <option value="update_report_status">Reports</option>
+                  <option value="update_user_status">Users</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Admin</th>
+                    <th>Action</th>
+                    <th>Target</th>
+                    <th>Status Change</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody data-admin-audit></tbody>
               </table>
             </div>
           </section>

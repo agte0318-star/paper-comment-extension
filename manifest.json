@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Paper Comment Extension",
-  "version": "0.2.6",
+  "version": "0.5.5",
   "description": "Rate and comment on academic papers while reading them.",
-  "permissions": ["storage"],
+  "homepage_url": "https://agte0318-star.github.io/paper-comment-extension/",
+  "permissions": ["storage", "identity", "activeTab"],
   "host_permissions": [
     "https://cckjactvkvgttknhxnot.supabase.co/*"
   ],
@@ -14,11 +15,15 @@
   },
   "action": {
     "default_title": "Paper Comments",
+    "default_popup": "src/popup/popup.html",
     "default_icon": {
       "16": "public/icons/icon-16.png",
       "48": "public/icons/icon-48.png",
       "128": "public/icons/icon-128.png"
     }
+  },
+  "background": {
+    "service_worker": "src/background/auth.js"
   },
   "content_scripts": [
     {

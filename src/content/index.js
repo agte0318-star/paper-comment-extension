@@ -2,6 +2,15 @@
   const namespace = window.PaperComment || {};
 
   const paper = namespace.detectPaper ? namespace.detectPaper() : null;
+  if (!window.PaperCommentPopupBridge) {
+    window.PaperCommentPopupBridge = true;
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      if (message?.type !== "PCE_GET_DETECTED_PAPER") return false;
+      sendResponse({ ok: Boolean(paper), paper });
+      return false;
+    });
+  }
+
   if (!paper || document.querySelector("#paper-comment-extension-root")) return;
 
   const host = document.createElement("div");
@@ -10,12 +19,21 @@
 
   const root = host;
   const TOGGLE_POSITION_KEY = "paper-comments:toggle-position";
+  const REPORT_REASONS = [
+    { value: "spam", label: "Spam" },
+    { value: "misleading", label: "Misleading" },
+    { value: "harassment", label: "Harassment" },
+    { value: "copyright", label: "Copyright issue" },
+    { value: "off-topic", label: "Off topic" },
+    { value: "other", label: "Other" }
+  ];
   const state = {
     open: false,
     ratingOpen: false,
     sortMode: "newest",
     comments: [],
     currentUser: null,
+    currentProfile: null,
     localUserId: null,
     paperRating: null,
     paperRatingSummary: { count: 0, average: null },
@@ -27,9 +45,20 @@
     authEmail: "",
     authPassword: "",
     authMessage: "",
+    authLoading: false,
+    authMode: "signin",
+    authIntent: null,
     togglePosition: null,
     shareMessage: "",
-    shareMessageCommentId: null
+    shareMessageCommentId: null,
+    replyTargetId: null,
+    replyMessage: "",
+    reportTargetId: null,
+    reportTargetType: "comment",
+    reportReason: "spam",
+    reportDetails: "",
+    reportMessage: "",
+    reportMessageCommentId: null
   };
 
   function getDataStore() {
@@ -41,7 +70,65 @@
   }
 
   function canWriteCloudData() {
-    return !isCloudMode() || Boolean(state.currentUser);
+    return !isCloudMode() || (Boolean(state.currentUser) && state.currentProfile?.status === "active");
+  }
+
+  function getAccountStatus() {
+    if (!isCloudMode()) return "active";
+    if (!state.currentUser) return "signed-out";
+    return state.currentProfile?.status || "unknown";
+  }
+
+  function getAccountStatusMessage() {
+    const status = getAccountStatus();
+    if (status === "suspended") {
+      return "Your account is suspended. You can read discussions, but cannot post, rate, like, reply, or report.";
+    }
+    if (status === "deleted") {
+      return "This account is deleted. Create or use an active account to participate.";
+    }
+    if (status === "unknown") {
+      return "Your account status could not be verified. Try signing in again.";
+    }
+    return "";
+  }
+
+  function getWriteBlockedMessage(intent = "participate") {
+    if (!isCloudMode()) return "";
+    if (!state.currentUser) return getAuthIntentMessage(intent);
+    return getAccountStatusMessage();
+  }
+
+  function getAuthIntentMessage(intent) {
+    if (intent === "rate") return "Sign in to rate this paper.";
+    if (intent === "comment") return "Sign in to join the discussion.";
+    if (intent === "reply") return "Sign in to reply.";
+    if (intent === "like") return "Sign in to like comments.";
+    if (intent === "report") return "Sign in to report comments.";
+    return "";
+  }
+
+  function openAuthModal(intent = null) {
+    if (state.currentUser && !canWriteCloudData()) {
+      state.authModalOpen = true;
+      state.authMode = "signin";
+      state.authIntent = null;
+      state.authMessage = getAccountStatusMessage();
+      render();
+      return;
+    }
+    state.authModalOpen = true;
+    state.authMode = "signin";
+    state.authIntent = intent;
+    state.authMessage = getAuthIntentMessage(intent);
+    render();
+  }
+
+  function focusCommentInputSoon() {
+    window.setTimeout(() => {
+      const input = root.querySelector(".pce-input");
+      if (input && !input.disabled && !input.readOnly) input.focus();
+    }, 0);
   }
 
   function storageGet(keys) {
@@ -142,6 +229,7 @@
     if (options.text) element.textContent = options.text;
     if (options.attrs) {
       for (const [key, value] of Object.entries(options.attrs)) {
+        if (value === null || value === undefined || value === false) continue;
         element.setAttribute(key, value);
       }
     }
@@ -191,6 +279,16 @@
     return Number(summary.average).toFixed(1);
   }
 
+  function getRatingPromptText() {
+    if (state.paperRating) {
+      return `Your score ${getRatingAverage()}/10`;
+    }
+    if (state.paperRatingSummary?.count) {
+      return "Add your score to the community signal";
+    }
+    return "Be the first to score this paper";
+  }
+
   function getRatingMood(value) {
     const score = Number(value);
     if (score >= 9) return "Essential";
@@ -201,6 +299,9 @@
   }
 
   function getUserLabel() {
+    if (state.currentProfile?.display_name) {
+      return state.currentProfile.display_name;
+    }
     const email = state.currentUser?.email || "User";
     return email.split("@")[0] || "User";
   }
@@ -230,6 +331,10 @@
 
   function hasLikedComment(comment) {
     return Array.isArray(comment.likedBy) && comment.likedBy.includes(state.localUserId);
+  }
+
+  function isOwnReply(reply) {
+    return !reply.userId || reply.userId === state.localUserId;
   }
 
   function render() {
@@ -280,25 +385,25 @@
       }
     });
     chip.addEventListener("click", () => {
-      state.authModalOpen = true;
-      render();
+      openAuthModal();
     });
     return chip;
   }
 
   function renderAuthModal() {
+    const isSignUpMode = state.authMode === "signup";
     const overlay = createElement("div", { className: "pce-auth-overlay" });
     const dialog = createElement("section", {
       className: "pce-auth-dialog",
-      attrs: { role: "dialog", "aria-modal": "true", "aria-label": "Sign in" }
+      attrs: { role: "dialog", "aria-modal": "true", "aria-label": isSignUpMode ? "Create account" : "Sign in" }
     });
     const header = createElement("div", { className: "pce-auth-dialog-header" });
     const title = createElement("div", { className: "pce-auth-dialog-title" });
     title.append(
-      createElement("span", { className: "pce-auth-title", text: state.currentUser ? "Account" : "Sign in" }),
+      createElement("span", { className: "pce-auth-title", text: state.currentUser ? "Account" : (isSignUpMode ? "Create account" : "Sign in") }),
       createElement("span", {
         className: "pce-auth-subtitle",
-        text: state.currentUser?.email || "Use cloud comments across papers."
+        text: state.currentUser?.email || (isSignUpMode ? "Use a real email and an 8+ character password." : "Use cloud comments across papers.")
       })
     );
     const close = createElement("button", {
@@ -309,11 +414,14 @@
     close.addEventListener("click", () => {
       state.authModalOpen = false;
       state.authMessage = "";
+      state.authLoading = false;
+      state.authIntent = null;
       render();
     });
     header.append(title, close);
 
     if (state.currentUser) {
+      const accountMessage = getAccountStatusMessage();
       const actions = createElement("div", { className: "pce-auth-actions" });
       const signOut = createElement("button", {
         className: "pce-auth-button",
@@ -324,28 +432,45 @@
         await getDataStore().signOut();
         state.authMessage = "";
         state.authModalOpen = false;
+        state.authLoading = false;
+        state.authIntent = null;
         await loadData();
       });
       actions.append(signOut);
-      dialog.append(header, actions);
+      dialog.appendChild(header);
+      if (accountMessage) {
+        dialog.appendChild(createElement("div", {
+          className: "pce-auth-message is-visible",
+          text: accountMessage
+        }));
+      }
+      dialog.appendChild(actions);
       overlay.appendChild(dialog);
       overlay.addEventListener("click", (event) => {
         if (event.target !== overlay) return;
         state.authModalOpen = false;
         state.authMessage = "";
+        state.authLoading = false;
+        state.authIntent = null;
         render();
       });
       return overlay;
     }
 
     const form = createElement("form", { className: "pce-auth-form" });
+    const googleButton = createElement("button", {
+      className: "pce-auth-button pce-google-button",
+      text: state.authLoading ? "Working..." : "Continue with Google",
+      attrs: { type: "button", ...(state.authLoading ? { disabled: "disabled" } : {}) }
+    });
     const email = createElement("input", {
       className: "pce-auth-input",
       attrs: {
         type: "email",
         placeholder: "Email",
         autocomplete: "email",
-        value: state.authEmail
+        value: state.authEmail,
+        disabled: state.authLoading ? "disabled" : null
       }
     });
     const password = createElement("input", {
@@ -354,7 +479,8 @@
         type: "password",
         placeholder: "Password",
         autocomplete: "current-password",
-        value: state.authPassword
+        value: state.authPassword,
+        disabled: state.authLoading ? "disabled" : null
       }
     });
 
@@ -362,44 +488,138 @@
     password.addEventListener("input", () => { state.authPassword = password.value; });
 
     const actions = createElement("div", { className: "pce-auth-actions" });
-    const signIn = createElement("button", {
+    const primary = createElement("button", {
       className: "pce-auth-button is-primary",
-      text: "Sign in",
-      attrs: { type: "submit" }
+      text: state.authLoading ? "Working..." : (isSignUpMode ? "Create account" : "Sign in"),
+      attrs: { type: "submit", ...(state.authLoading ? { disabled: "disabled" } : {}) }
     });
-    const signUp = createElement("button", {
+    const secondary = createElement("button", {
       className: "pce-auth-button",
-      text: "Create account",
-      attrs: { type: "button" }
+      text: isSignUpMode ? "Back to sign in" : "Create account",
+      attrs: { type: "button", ...(state.authLoading ? { disabled: "disabled" } : {}) }
     });
-    actions.append(signIn, signUp);
+    actions.append(primary, secondary);
 
     const message = createElement("div", {
       className: state.authMessage ? "pce-auth-message is-visible" : "pce-auth-message",
       text: state.authMessage
     });
+    const forgotPassword = createElement("button", {
+      className: "pce-auth-link",
+      text: "Forgot password?",
+      attrs: { type: "button", ...(state.authLoading ? { disabled: "disabled" } : {}) }
+    });
 
     async function runAuth(mode) {
       const emailValue = email.value.trim();
       const passwordValue = password.value;
+      const isSignUp = mode === "signup";
       if (!emailValue || !passwordValue) {
-        state.authMessage = "Enter your email and password.";
+        state.authMessage = isSignUp ? "Enter an email and password to create your account." : "Enter your email and password to sign in.";
         render();
         return;
       }
+      if (!email.validity.valid) {
+        state.authMessage = "Enter a valid email address.";
+        render();
+        return;
+      }
+      if (isSignUp && passwordValue.length < 8) {
+        state.authMessage = "Use at least 8 characters for your password.";
+        render();
+        return;
+      }
+
+      state.authEmail = emailValue;
+      state.authPassword = passwordValue;
+      state.authLoading = true;
+      state.authMessage = isSignUp ? "Creating account..." : "Signing in...";
+      render();
+
       try {
-        if (mode === "signup") {
-          await getDataStore().signUp(emailValue, passwordValue);
-          state.authMessage = "Account created. If email confirmation is enabled, confirm your email before signing in.";
+        if (isSignUp) {
+          const payload = await getDataStore().signUp(emailValue, passwordValue);
+          state.authMessage = payload?.access_token
+            ? "Account created. You are signed in."
+            : "Account created. Check your inbox and spam folder, confirm your email, then sign in.";
+          state.authMode = "signin";
+          if (payload?.access_token) {
+            const intent = state.authIntent;
+            state.authIntent = null;
+            state.authModalOpen = false;
+            if (intent === "rate") state.ratingOpen = true;
+            state.authEmail = "";
+            state.authPassword = "";
+            await loadData();
+            if (intent === "comment") focusCommentInputSoon();
+            return;
+          }
         } else {
           await getDataStore().signIn(emailValue, passwordValue);
+          const intent = state.authIntent;
+          state.authIntent = null;
+          if (intent === "rate") state.ratingOpen = true;
           state.authEmail = "";
           state.authPassword = "";
           state.authMessage = "";
           state.authModalOpen = false;
+          state.authLoading = false;
+          await loadData();
+          if (intent === "comment") focusCommentInputSoon();
+          return;
         }
+        state.authLoading = false;
         await loadData();
       } catch (error) {
+        state.authLoading = false;
+        state.authMessage = error.message;
+        render();
+      }
+    }
+
+    async function runGoogleAuth() {
+      state.authLoading = true;
+      state.authMessage = "Opening Google sign-in...";
+      render();
+
+      try {
+        await getDataStore().signInWithGoogle();
+        const intent = state.authIntent;
+        state.authIntent = null;
+        if (intent === "rate") state.ratingOpen = true;
+        state.authEmail = "";
+        state.authPassword = "";
+        state.authMessage = "";
+        state.authModalOpen = false;
+        state.authLoading = false;
+        await loadData();
+        if (intent === "comment") focusCommentInputSoon();
+      } catch (error) {
+        state.authLoading = false;
+        state.authMessage = error.message;
+        render();
+      }
+    }
+
+    async function runPasswordReset() {
+      const emailValue = email.value.trim();
+      if (!emailValue || !email.validity.valid) {
+        state.authMessage = "Enter your email first.";
+        render();
+        return;
+      }
+      state.authEmail = emailValue;
+      state.authLoading = true;
+      state.authMessage = "Sending password reset email...";
+      render();
+
+      try {
+        await getDataStore().sendPasswordReset(emailValue);
+        state.authLoading = false;
+        state.authMessage = "Password reset email sent. Check your inbox.";
+        render();
+      } catch (error) {
+        state.authLoading = false;
         state.authMessage = error.message;
         render();
       }
@@ -407,17 +627,25 @@
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      runAuth("signin");
+      runAuth(state.authMode);
     });
-    signUp.addEventListener("click", () => runAuth("signup"));
+    secondary.addEventListener("click", () => {
+      state.authMode = isSignUpMode ? "signin" : "signup";
+      state.authMessage = "";
+      render();
+    });
+    forgotPassword.addEventListener("click", runPasswordReset);
+    googleButton.addEventListener("click", runGoogleAuth);
 
-    form.append(email, password, actions, message);
+    form.append(googleButton, createElement("div", { className: "pce-auth-divider", text: "or use email" }), email, password, actions, forgotPassword, message);
     dialog.append(header, form);
     overlay.appendChild(dialog);
     overlay.addEventListener("click", (event) => {
       if (event.target !== overlay) return;
       state.authModalOpen = false;
       state.authMessage = "";
+      state.authLoading = false;
+      state.authIntent = null;
       render();
     });
     return overlay;
@@ -483,14 +711,19 @@
     );
     left.append(
       scoreLine,
-      createElement("span", { className: "pce-rating-count", text: getCommunityRatingText() })
+      createElement("span", { className: "pce-rating-count", text: getCommunityRatingText() }),
+      createElement("span", { className: "pce-rating-prompt", text: getRatingPromptText() })
     );
     const right = createElement("span", {
       className: state.ratingOpen ? "pce-rating-action is-open" : "pce-rating-action",
-      text: state.ratingOpen ? "Close" : (state.paperRating ? "Edit" : "Rate +")
+      text: state.ratingOpen ? "Close" : (state.paperRating ? "Edit" : "Add score")
     });
     summary.append(left, right);
     summary.addEventListener("click", () => {
+      if (!canWriteCloudData()) {
+        openAuthModal("rate");
+        return;
+      }
       state.ratingOpen = !state.ratingOpen;
       render();
     });
@@ -507,6 +740,10 @@
     const form = createElement("form", { className: "pce-rating-form" });
     const disabled = !state.canUpdateRating || !canWriteCloudData();
     const currentValue = getRatingAverage() || 5;
+    const hint = createElement("div", {
+      className: "pce-rating-hint",
+      text: state.paperRating ? "Update your overall score once per day." : "One overall score helps other readers calibrate the paper."
+    });
     const hero = createElement("div", { className: "pce-rate-picker" });
     const current = createElement("div", { className: "pce-rate-current" });
     const currentScore = createElement("strong", { className: "pce-rate-current-score", text: String(Math.round(Number(currentValue))) });
@@ -527,7 +764,7 @@
     }
 
     hero.append(current, quick);
-    form.appendChild(hero);
+    form.append(hint, hero);
 
     const row = createElement("label", { className: "pce-rating-row pce-rating-row-single" });
     const input = createElement("input", {
@@ -565,7 +802,7 @@
 
     const message = createElement("div", {
       className: state.ratingMessage ? "pce-form-message is-visible" : "pce-form-message",
-      text: state.ratingMessage || (!canWriteCloudData() ? "Sign in to rate this paper." : (disabled ? "You can update this rating once per day." : ""))
+      text: state.ratingMessage || (!canWriteCloudData() ? getWriteBlockedMessage("rate") : (disabled ? "You can update this rating once per day." : ""))
     });
     if (disabled && !state.ratingMessage) message.classList.add("is-visible");
 
@@ -635,11 +872,251 @@
         createElement("span", { text: formatTime(comment.createdAt) })
       );
       const body = createElement("p", { className: "pce-comment-body", text: comment.content });
-      item.append(row, body, renderCommentActions(comment));
+      item.append(row, body, renderCommentActions(comment), renderReplies(comment));
+      if (state.replyTargetId === comment.id) {
+        item.appendChild(renderReplyForm(comment));
+      }
+      if (state.reportTargetType === "comment" && state.reportTargetId === comment.id) {
+        item.appendChild(renderReportForm(comment, "comment"));
+      }
       list.appendChild(item);
     }
 
     return list;
+  }
+
+  function renderReplies(comment) {
+    const replies = Array.isArray(comment.replies) ? comment.replies : [];
+    const wrapper = createElement("div", { className: replies.length ? "pce-replies" : "pce-replies is-empty" });
+    if (!replies.length) return wrapper;
+
+    for (const reply of replies.slice(-3)) {
+      const item = createElement("div", { className: "pce-reply" });
+      const meta = createElement("div", { className: "pce-reply-meta" });
+      meta.append(
+        createElement("strong", { text: reply.author || "Reader" }),
+        createElement("span", { text: formatTime(reply.createdAt) })
+      );
+      item.append(
+        meta,
+        createElement("div", { className: "pce-reply-body", text: reply.content }),
+        renderReplyActions(reply)
+      );
+      if (state.reportTargetType === "reply" && state.reportTargetId === reply.id) {
+        item.appendChild(renderReportForm(reply, "reply"));
+      }
+      wrapper.appendChild(item);
+    }
+    return wrapper;
+  }
+
+  function renderReplyActions(reply) {
+    const actions = createElement("div", { className: "pce-reply-inline-actions" });
+    const reportButton = createElement("button", {
+      className: state.reportTargetType === "reply" && state.reportTargetId === reply.id ? "pce-reply-action is-active" : "pce-reply-action",
+      text: "Report",
+      attrs: { type: "button" }
+    });
+    if (isOwnReply(reply)) {
+      reportButton.disabled = true;
+      reportButton.title = "You cannot report your own reply.";
+    } else if (isCloudMode() && state.currentUser && !canWriteCloudData()) {
+      reportButton.disabled = true;
+      reportButton.title = getAccountStatusMessage();
+    } else {
+      reportButton.title = isCloudMode() && !state.currentUser ? "Sign in to report replies." : "Report this reply.";
+    }
+    reportButton.addEventListener("click", () => {
+      if (isCloudMode() && !state.currentUser) {
+        state.reportTargetId = reply.id;
+        state.reportTargetType = "reply";
+        openAuthModal("report");
+        return;
+      }
+      if (!canWriteCloudData() || isOwnReply(reply)) return;
+      state.reportTargetId = state.reportTargetType === "reply" && state.reportTargetId === reply.id ? null : reply.id;
+      state.reportTargetType = "reply";
+      state.reportMessage = "";
+      state.reportDetails = "";
+      render();
+    });
+    actions.appendChild(reportButton);
+    if (state.reportMessage && state.reportMessageCommentId === reply.id && state.reportTargetId !== reply.id) {
+      actions.appendChild(createElement("span", {
+        className: "pce-share-message",
+        text: state.reportMessage
+      }));
+    }
+    return actions;
+  }
+
+  function renderReplyForm(comment) {
+    const form = createElement("form", { className: "pce-reply-form" });
+    const blockedMessage = getWriteBlockedMessage("reply");
+    const disabled = Boolean(blockedMessage);
+    const input = createElement("textarea", {
+      className: "pce-reply-input",
+      attrs: {
+        placeholder: disabled ? blockedMessage : "Write a brief reply...",
+        ...(disabled ? { disabled: "disabled" } : {})
+      }
+    });
+    const message = createElement("div", {
+      className: state.replyMessage || blockedMessage ? "pce-form-message is-visible" : "pce-form-message",
+      text: state.replyMessage || blockedMessage
+    });
+    const actions = createElement("div", { className: "pce-reply-actions" });
+    const cancel = createElement("button", {
+      className: "pce-action-button",
+      text: "Cancel",
+      attrs: { type: "button" }
+    });
+    cancel.addEventListener("click", () => {
+      state.replyTargetId = null;
+      state.replyMessage = "";
+      render();
+    });
+    const submit = createElement("button", {
+      className: "pce-action-button is-primary",
+      text: "Reply",
+      attrs: { type: "submit" }
+    });
+    submit.disabled = disabled;
+    actions.append(cancel, submit);
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (disabled) return;
+      const content = input.value.trim();
+      if (!content) {
+        state.replyMessage = "Please write a reply first.";
+        render();
+        return;
+      }
+      const moderation = namespace.moderation.checkContent(content);
+      if (!moderation.ok) {
+        state.replyMessage = moderation.reason;
+        render();
+        return;
+      }
+
+      try {
+        await getDataStore().addReply(paper.key, comment.id, { content }, paper);
+        state.replyTargetId = null;
+        state.replyMessage = "";
+        await loadData();
+      } catch (error) {
+        state.replyMessage = error.message;
+        render();
+      }
+    });
+
+    form.append(input, message, actions);
+    window.setTimeout(() => input.focus(), 0);
+    return form;
+  }
+
+  function renderReportForm(target, type = "comment") {
+    const form = createElement("form", { className: "pce-report-form" });
+    const blockedMessage = getWriteBlockedMessage("report");
+    const isOwnTarget = type === "reply" ? isOwnReply(target) : isOwnComment(target);
+    const targetName = type === "reply" ? "reply" : "comment";
+    const disabled = Boolean(blockedMessage) || isOwnTarget;
+    const reason = createElement("select", {
+      className: "pce-report-select",
+      attrs: {
+        name: "reason",
+        ...(disabled ? { disabled: "disabled" } : {})
+      }
+    });
+    REPORT_REASONS.forEach((item) => {
+      const option = createElement("option", {
+        text: item.label,
+        attrs: { value: item.value }
+      });
+      if (item.value === state.reportReason) option.selected = true;
+      reason.appendChild(option);
+    });
+    reason.addEventListener("change", () => {
+      state.reportReason = reason.value;
+    });
+
+    const details = createElement("textarea", {
+      className: "pce-report-input",
+      attrs: {
+        name: "details",
+        maxlength: "500",
+        placeholder: disabled ? (blockedMessage || `You cannot report your own ${targetName}.`) : "Optional details for the moderator...",
+        ...(disabled ? { disabled: "disabled" } : {})
+      }
+    });
+    details.value = state.reportDetails;
+    details.addEventListener("input", () => {
+      state.reportDetails = details.value;
+    });
+
+    const messageText = state.reportMessage || blockedMessage || (isOwnTarget ? `You cannot report your own ${targetName}.` : "");
+    const message = createElement("div", {
+      className: messageText ? "pce-form-message is-visible" : "pce-form-message",
+      text: messageText
+    });
+
+    const actions = createElement("div", { className: "pce-report-actions" });
+    const cancel = createElement("button", {
+      className: "pce-action-button",
+      text: "Cancel",
+      attrs: { type: "button" }
+    });
+    cancel.addEventListener("click", () => {
+      state.reportTargetId = null;
+      state.reportTargetType = "comment";
+      state.reportMessage = "";
+      state.reportDetails = "";
+      render();
+    });
+    const submit = createElement("button", {
+      className: "pce-action-button is-primary",
+      text: "Submit report",
+      attrs: { type: "submit" }
+    });
+    submit.disabled = disabled;
+    actions.append(cancel, submit);
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (disabled) return;
+
+      try {
+        const store = getDataStore();
+        if (type === "reply") {
+          await store.reportReply(paper.key, target.id, {
+            reason: reason.value,
+            details: details.value
+          });
+        } else {
+          await store.reportComment(paper.key, target.id, {
+            reason: reason.value,
+            details: details.value
+          });
+        }
+        state.reportTargetId = null;
+        state.reportTargetType = "comment";
+        state.reportDetails = "";
+        state.reportReason = "spam";
+        state.reportMessage = "Report submitted.";
+        state.reportMessageCommentId = target.id;
+        await loadData();
+      } catch (error) {
+        state.reportMessage = error.message.includes("duplicate")
+          ? `You have already reported this ${targetName}.`
+          : error.message;
+        state.reportMessageCommentId = target.id;
+        render();
+      }
+    });
+
+    form.append(reason, details, message, actions);
+    return form;
   }
 
   function renderCommentActions(comment) {
@@ -652,14 +1129,20 @@
     });
 
     if (isCloudMode() && !state.currentUser) {
-      likeButton.disabled = true;
       likeButton.title = "Sign in to like comments.";
+    } else if (isCloudMode() && state.currentUser && !canWriteCloudData()) {
+      likeButton.disabled = true;
+      likeButton.title = getAccountStatusMessage();
     } else if (isOwnComment(comment)) {
       likeButton.disabled = true;
       likeButton.title = "You can only like comments from other users.";
     }
 
     likeButton.addEventListener("click", async () => {
+      if (isCloudMode() && !state.currentUser) {
+        openAuthModal("like");
+        return;
+      }
       try {
         await getDataStore().toggleCommentLike(paper.key, comment.id);
         await loadData();
@@ -686,11 +1169,62 @@
       render();
     });
 
-    actions.append(likeButton, shareButton);
+    const replyButton = createElement("button", {
+      className: state.replyTargetId === comment.id ? "pce-action-button is-active" : "pce-action-button",
+      text: comment.replyCount ? `Reply ${comment.replyCount}` : "Reply",
+      attrs: { type: "button" }
+    });
+    replyButton.addEventListener("click", () => {
+      if (!canWriteCloudData()) {
+        state.replyTargetId = comment.id;
+        openAuthModal("reply");
+        return;
+      }
+      state.replyTargetId = state.replyTargetId === comment.id ? null : comment.id;
+      state.replyMessage = "";
+      render();
+    });
+
+    const reportButton = createElement("button", {
+      className: state.reportTargetType === "comment" && state.reportTargetId === comment.id ? "pce-action-button is-active" : "pce-action-button",
+      text: "Report",
+      attrs: { type: "button" }
+    });
+    if (isOwnComment(comment)) {
+      reportButton.disabled = true;
+      reportButton.title = "You cannot report your own comment.";
+    } else if (isCloudMode() && state.currentUser && !canWriteCloudData()) {
+      reportButton.disabled = true;
+      reportButton.title = getAccountStatusMessage();
+    } else {
+      reportButton.title = isCloudMode() && !state.currentUser ? "Sign in to report comments." : "Report this comment.";
+    }
+    reportButton.addEventListener("click", () => {
+      if (isCloudMode() && !state.currentUser) {
+        state.reportTargetId = comment.id;
+        state.reportTargetType = "comment";
+        openAuthModal("report");
+        return;
+      }
+      if (!canWriteCloudData() || isOwnComment(comment)) return;
+      state.reportTargetId = state.reportTargetType === "comment" && state.reportTargetId === comment.id ? null : comment.id;
+      state.reportTargetType = "comment";
+      state.reportMessage = "";
+      state.reportDetails = "";
+      render();
+    });
+
+    actions.append(likeButton, replyButton, shareButton, reportButton);
     if (state.shareMessage && state.shareMessageCommentId === comment.id) {
       actions.appendChild(createElement("span", {
         className: "pce-share-message",
         text: state.shareMessage
+      }));
+    }
+    if (state.reportMessage && state.reportMessageCommentId === comment.id && state.reportTargetId !== comment.id) {
+      actions.appendChild(createElement("span", {
+        className: "pce-share-message",
+        text: state.reportMessage
       }));
     }
     return actions;
@@ -794,35 +1328,51 @@
 
   function renderCommentForm() {
     const form = createElement("form", { className: "pce-form" });
+    const signedOut = isCloudMode() && !state.currentUser;
+    const blockedMessage = getWriteBlockedMessage("comment");
+    const blocked = Boolean(blockedMessage);
     const textarea = createElement("textarea", {
       className: "pce-input",
       attrs: {
-        placeholder: "Share your overall comment on this paper..."
+        placeholder: blocked ? blockedMessage : "Share your overall comment on this paper...",
+        ...(blocked ? { readonly: "readonly" } : {})
       }
     });
+    if (signedOut) {
+      textarea.addEventListener("focus", () => openAuthModal("comment"));
+      textarea.addEventListener("click", () => openAuthModal("comment"));
+    }
 
     const message = createElement("div", {
-      className: state.formMessage ? "pce-form-message is-visible" : "pce-form-message",
-      text: state.formMessage
+      className: state.formMessage || (!signedOut && blockedMessage) ? "pce-form-message is-visible" : "pce-form-message",
+      text: state.formMessage || (!signedOut ? blockedMessage : "")
     });
 
     const footer = createElement("div", { className: "pce-form-footer" });
     footer.appendChild(createElement("span", {
-      text: !canWriteCloudData()
-        ? "Sign in to post"
-        : (state.hasCommentedToday ? "One comment per paper per day." : "Overall paper comment")
+      text: blocked
+        ? (signedOut ? "Sign in to comment" : "Account cannot comment")
+        : state.hasCommentedToday ? "One comment per paper per day." : "Overall paper comment"
     }));
     const submit = createElement("button", {
       className: "pce-submit",
-      text: "Post comment",
-      attrs: { type: "submit" }
+      text: signedOut ? "Sign in" : "Post comment",
+      attrs: { type: signedOut ? "button" : "submit" }
     });
-    submit.disabled = state.hasCommentedToday || !canWriteCloudData();
+    submit.disabled = !signedOut && (blocked || state.hasCommentedToday);
+    if (signedOut) {
+      submit.addEventListener("click", () => openAuthModal("comment"));
+    }
     footer.appendChild(submit);
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (state.hasCommentedToday || !canWriteCloudData()) return;
+      if (signedOut) {
+        openAuthModal("comment");
+        return;
+      }
+      if (blocked) return;
+      if (state.hasCommentedToday) return;
 
       const content = textarea.value.trim();
       if (!content) {
@@ -849,7 +1399,7 @@
       }
     });
 
-    if (state.hasCommentedToday || !canWriteCloudData()) {
+    if (state.hasCommentedToday) {
       textarea.disabled = true;
     }
 
@@ -862,6 +1412,7 @@
     const savedUi = await storageGet([TOGGLE_POSITION_KEY]);
     state.togglePosition = savedUi[TOGGLE_POSITION_KEY] || null;
     state.currentUser = store.getCurrentUser ? await store.getCurrentUser() : null;
+    state.currentProfile = store.getCurrentProfile ? await store.getCurrentProfile() : null;
     state.localUserId = await store.getLocalUserId();
     state.comments = await store.listComments(paper.key, paper);
     state.hasCommentedToday = await store.hasCommentedToday(paper.key, paper);

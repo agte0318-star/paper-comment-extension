@@ -139,28 +139,97 @@ window.PCE_DATA = {
       createdAt: "2026-06-02T14:04:00.000Z"
     }
   ],
+  replies: [
+    {
+      id: "reply-1",
+      commentId: "comment-1",
+      paperId: "paper-1",
+      userId: "user-3",
+      author: "robotics_postdoc",
+      content: "Thanks for the clarification, but this reply should be checked by a moderator.",
+      status: "visible",
+      paperKey: "doi:10.1002/smll.73674",
+      createdAt: "2026-06-03T08:08:00.000Z"
+    }
+  ],
   reports: [
     {
       id: "report-1",
+      reportType: "comment",
+      targetType: "comment",
+      targetId: "comment-2",
       commentId: "comment-2",
+      reporter: "materials_reader",
       reason: "Potentially misleading",
       details: "Reporter says the batch comparison criticism needs citation.",
       status: "open",
+      commentAuthor: "surface_lab",
+      commentContent: "The operando evidence is strong, especially the way the authors connect transient interface states to product selectivity. The main weakness is that the supplementary control experiments are hard to compare across catalyst batches.",
+      commentStatus: "visible",
+      paperKey: "doi:10.1038/s41586-026-00001-0",
       createdAt: "2026-06-03T07:40:00.000Z"
     },
     {
       id: "report-2",
+      reportType: "comment",
+      targetType: "comment",
+      targetId: "comment-5",
       commentId: "comment-5",
+      reporter: "surface_lab",
       reason: "Tone",
       details: "Reporter says the comment is fair but too strongly worded.",
       status: "reviewing",
+      commentAuthor: "chem_evaluator",
+      commentContent: "The synthesis route is practical and the characterization is broad. The mechanism section is the least mature part: several defect assignments seem plausible but not uniquely supported.",
+      commentStatus: "visible",
+      paperKey: "doi:10.1007/s12274-026-0001-1",
       createdAt: "2026-06-02T16:18:00.000Z"
+    },
+    {
+      id: "reply-report-1",
+      reportType: "reply",
+      targetType: "reply",
+      targetId: "reply-1",
+      replyId: "reply-1",
+      reporter: "robotics_postdoc",
+      reason: "Spam",
+      details: "Sample reply report for local admin preview.",
+      status: "open",
+      commentAuthor: "local_reader",
+      commentContent: "Thanks for the clarification, but this reply should be checked by a moderator.",
+      commentStatus: "visible",
+      paperKey: "doi:10.1002/smll.73674",
+      createdAt: "2026-06-03T08:10:00.000Z"
     }
   ],
   users: [
-    { id: "user-1", name: "materials_reader", role: "user", status: "active", commentCount: 9 },
-    { id: "user-2", name: "surface_lab", role: "moderator", status: "active", commentCount: 14 },
-    { id: "user-3", name: "robotics_postdoc", role: "user", status: "active", commentCount: 4 },
-    { id: "user-4", name: "spam_candidate", role: "user", status: "watchlist", commentCount: 2 }
+    { id: "user-1", name: "materials_reader", role: "user", status: "active", commentCount: 9, reportCount: 1 },
+    { id: "user-2", name: "surface_lab", role: "moderator", status: "active", commentCount: 14, reportCount: 1 },
+    { id: "user-3", name: "robotics_postdoc", role: "user", status: "active", commentCount: 4, reportCount: 1 },
+    { id: "user-4", name: "spam_candidate", role: "user", status: "suspended", commentCount: 2, reportCount: 0 }
+  ],
+  actions: [
+    {
+      id: "audit-1",
+      actorId: "user-2",
+      actor: "surface_lab",
+      actionType: "update_report_status",
+      targetType: "comment_report",
+      targetId: "report-2",
+      previousStatus: "open",
+      newStatus: "reviewing",
+      createdAt: "2026-06-03T08:22:00.000Z"
+    },
+    {
+      id: "audit-2",
+      actorId: "user-2",
+      actor: "surface_lab",
+      actionType: "update_user_status",
+      targetType: "user",
+      targetId: "user-4",
+      previousStatus: "active",
+      newStatus: "suspended",
+      createdAt: "2026-06-03T08:18:00.000Z"
+    }
   ]
 };

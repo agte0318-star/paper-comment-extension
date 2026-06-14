@@ -50,7 +50,9 @@
       .map((comment) => ({
         ...comment,
         likedBy: Array.isArray(comment.likedBy) ? comment.likedBy : [],
-        likeCount: Number.isFinite(comment.likeCount) ? comment.likeCount : 0
+        likeCount: Number.isFinite(comment.likeCount) ? comment.likeCount : 0,
+        replies: Array.isArray(comment.replies) ? comment.replies : [],
+        replyCount: Array.isArray(comment.replies) ? comment.replies.length : 0
       }))
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }
@@ -64,6 +66,15 @@
       chrome.storage.local.set({ [USER_ID_KEY]: userId }, resolve);
     });
     return userId;
+  }
+
+  async function getCurrentProfile() {
+    return {
+      id: await getLocalUserId(),
+      display_name: "Local reader",
+      role: "user",
+      status: "active"
+    };
   }
 
   function getLocalDateKey(date = new Date()) {
@@ -96,12 +107,43 @@
       content: input.content.trim(),
       likedBy: [],
       likeCount: 0,
+      replies: [],
+      replyCount: 0,
       localDate: getLocalDateKey(),
       createdAt: new Date().toISOString()
     };
 
     await write(paperKey, [comment, ...comments]);
     return comment;
+  }
+
+  async function addReply(paperKey, commentId, input) {
+    const comments = await read(paperKey);
+    const userId = await getLocalUserId();
+    const index = comments.findIndex((comment) => comment.id === commentId);
+
+    if (index === -1) {
+      throw new Error("Comment not found.");
+    }
+
+    const reply = {
+      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      commentId,
+      userId,
+      author: "Local reader",
+      content: input.content.trim(),
+      createdAt: new Date().toISOString()
+    };
+    const replies = Array.isArray(comments[index].replies) ? comments[index].replies : [];
+    comments[index] = {
+      ...comments[index],
+      replies: [...replies, reply],
+      replyCount: replies.length + 1,
+      updatedAt: new Date().toISOString()
+    };
+
+    await write(paperKey, comments);
+    return reply;
   }
 
   async function toggleCommentLike(paperKey, commentId) {
@@ -133,6 +175,14 @@
 
     await write(paperKey, comments);
     return comments[index];
+  }
+
+  async function reportComment() {
+    return { localOnly: true };
+  }
+
+  async function reportReply() {
+    return { localOnly: true };
   }
 
   async function getPaperRating(paperKey) {
@@ -208,8 +258,12 @@
 
   namespace.localComments = {
     listComments,
+    getCurrentProfile,
     addComment,
+    addReply,
     toggleCommentLike,
+    reportComment,
+    reportReply,
     hasCommentedToday,
     getLocalUserId,
     getPaperRating,

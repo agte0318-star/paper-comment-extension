@@ -62,23 +62,27 @@
       <h2>Data Stored Locally</h2>
       <p>The extension stores the following data locally in the user's browser through <code>chrome.storage.local</code>:</p>
       <ul>
-        <li>The Supabase sign-in session for the current user.</li>
+        <li>The Supabase sign-in session for the current user, including sessions created through Google sign-in.</li>
         <li>Draft interface state needed by the extension.</li>
         <li>A local anonymous browser identifier used only when the extension is running without Supabase cloud mode.</li>
-        <li>Local fallback comments, ratings, and likes when Supabase is not configured.</li>
+        <li>Local fallback comments, ratings, likes, and replies when Supabase is not configured.</li>
       </ul>
 
       <h2>Data Sent to Supabase</h2>
       <p>When a user signs in and uses cloud mode, the extension sends the following user-created or article-identifying data to Supabase:</p>
       <ul>
         <li>Email address for account sign-in.</li>
+        <li>Google account identity information returned by Supabase Auth when Google sign-in is used, such as email address and display name.</li>
+        <li>Optional profile information entered by the user, such as display name, institution, ORCID, and research field.</li>
+        <li>Account moderation status, such as active, suspended, or deleted, so the service can enforce community safety rules.</li>
         <li>Paper identifiers such as DOI, arXiv ID, PubMed ID, PMC ID, title, source, and page URL.</li>
         <li>User-created comments.</li>
+        <li>User-created replies to comments.</li>
         <li>User-created overall article ratings.</li>
         <li>Comment likes.</li>
-        <li>Comment reports when reporting is enabled.</li>
+        <li>Comment and reply reports when reporting is enabled.</li>
       </ul>
-      <p>This data is used to show shared comments, ratings, and likes to other users reading the same paper.</p>
+      <p>This data is used to show shared comments, replies, ratings, and likes to other users reading the same paper, and to show signed-in users their own activity on the profile page.</p>
 
       <h2>Data Not Collected</h2>
       <p>The extension does not collect, transmit, sell, or share:</p>
@@ -95,22 +99,22 @@
 
       <h2>Website Access</h2>
       <p>
-        The extension runs only on scholarly domains listed in the extension manifest. It reads page metadata such as DOI, arXiv ID, PubMed ID, PMC ID, title, and canonical URL to identify the paper and show the correct comment panel.
+        The extension runs only on scholarly domains listed in the extension manifest. It reads page metadata such as DOI, arXiv ID, PubMed ID, PMC ID, title, and canonical URL to identify the paper and show the correct comment panel. When the user opens the extension popup and chooses to open the current paper discussion, the extension may read the active tab's title and URL to create the matching discussion link, especially for PDF tabs.
       </p>
 
       <h2>Data Sharing</h2>
       <p>
-        Comments, ratings, and likes submitted in cloud mode are stored in Supabase and may be visible to other extension users. The extension does not sell user data or use user data for advertising.
+        Comments, replies, ratings, and likes submitted in cloud mode are stored in Supabase and may be visible to other extension users. The extension does not sell user data or use user data for advertising.
       </p>
 
       <h2>Data Retention and Deletion</h2>
       <p>
-        Local data remains in the browser until the user removes the extension, clears extension storage, or signs out. Cloud comments, ratings, likes, and paper metadata remain in Supabase until they are deleted, moderated, or removed by the project maintainer.
+        Local data remains in the browser until the user removes the extension, clears extension storage, or signs out. Cloud comments, replies, ratings, likes, and paper metadata remain in Supabase until they are deleted, moderated, or removed by the project maintainer.
       </p>
 
       <h2>Security</h2>
       <p>
-        The extension uses Chrome extension storage APIs and the Supabase public client API. It does not request access to cookies, tabs, browsing history, or web request data.
+        The extension uses Chrome extension storage APIs, Chrome's identity API for Google sign-in, Chrome's activeTab permission for user-initiated current-page discussion links, and the Supabase public client API. It does not request access to cookies, browsing history, ongoing tab monitoring, or web request data.
       </p>
 
       <h2>Contact</h2>

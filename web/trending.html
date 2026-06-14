@@ -15,6 +15,7 @@
         </a>
         <nav class="nav" aria-label="Primary navigation">
           <a class="active" href="./trending.html">Trending</a>
+          <a href="./profile.html">My Profile</a>
           <a href="../privacy-policy.html">Privacy</a>
         </nav>
       </header>
@@ -29,20 +30,23 @@
             </p>
           </div>
           <div class="toolbar">
-            <select class="select" aria-label="Time range">
-              <option>Last 7 days</option>
-              <option>Last 30 days</option>
-              <option>All time</option>
+            <input class="search" type="search" data-trending-search placeholder="Search papers, journals, or comments" aria-label="Search public activity">
+            <select class="select" data-trending-sort aria-label="Sort papers">
+              <option value="discussion">Most discussed</option>
+              <option value="rating">Top rated</option>
+              <option value="newest">Newest activity</option>
             </select>
           </div>
         </div>
+
+        <div class="page-notice" data-page-notice hidden></div>
 
         <section class="metrics" data-metrics aria-label="Activity metrics"></section>
 
         <section class="section">
           <div class="section-title">
             <h2>Most Discussed Papers</h2>
-            <span class="status">Ranked by comment count</span>
+            <span class="status" data-most-discussed-status>Ranked by discussion count</span>
           </div>
           <div class="paper-list" data-most-discussed></div>
         </section>
@@ -51,7 +55,7 @@
           <div>
             <div class="section-title">
               <h2>Top Rated Papers</h2>
-              <span class="status">Average article score</span>
+              <span class="status" data-top-rated-status>Average article score</span>
             </div>
             <div class="paper-list" data-top-rated></div>
           </div>
@@ -59,7 +63,7 @@
           <div>
             <div class="section-title">
               <h2>Hot Comments</h2>
-              <span class="status">Most liked comments</span>
+              <span class="status" data-hot-comments-status>Most liked comments</span>
             </div>
             <div class="comment-list" data-hot-comments></div>
           </div>

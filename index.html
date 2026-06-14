@@ -35,9 +35,15 @@
         line-height: 1.7;
       }
 
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px 22px;
+        margin-top: 18px;
+      }
+
       a {
         display: inline-flex;
-        margin-top: 18px;
         color: #0f766e;
         font-weight: 750;
       }
@@ -47,10 +53,15 @@
     <main>
       <h1>Paper Comment Extension</h1>
       <p>
-        A browser extension beta for shared comments, ratings, and likes on academic papers while reading them. The current v0.2 release uses Supabase for signed-in cloud discussion and keeps local storage as a development fallback.
+        A browser extension beta for shared article-level comments, ratings, replies, likes, reports, and public paper discussion pages while reading academic papers.
       </p>
-      <a href="./privacy-policy.html">Privacy Policy</a>
-      <a href="./web/trending.html">Trending</a>
+      <div class="links">
+        <a href="./web/trending.html">Trending Papers</a>
+        <a href="./web/profile.html">My Profile</a>
+        <a href="./support.html">Support</a>
+        <a href="./privacy-policy.html">Privacy Policy</a>
+        <a href="https://github.com/agte0318-star/paper-comment-extension">GitHub</a>
+      </div>
     </main>
   </body>
 </html>

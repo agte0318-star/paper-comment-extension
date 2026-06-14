@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Profile | Paper Comment Extension</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body data-page="profile">
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./trending.html" aria-label="Paper Comment Extension">
+          <span class="brand-mark">PC</span>
+          <span>Paper Comment Extension</span>
+        </a>
+        <nav class="nav" aria-label="Primary navigation">
+          <a href="./trending.html">Trending</a>
+          <a class="active" href="./profile.html">My Profile</a>
+          <a href="../privacy-policy.html">Privacy</a>
+        </nav>
+      </header>
+
+      <main class="page">
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">Personal activity</p>
+            <h1>Your comments, likes, and replies across papers.</h1>
+            <p class="subtle">
+              Sign in with the same account you use in the extension. This page only shows your own activity and replies to your comments.
+            </p>
+          </div>
+        </div>
+
+        <section class="auth-card" data-profile-auth></section>
+
+        <section data-profile-protected hidden>
+          <section class="section profile-details">
+            <div class="section-title">
+              <h2>Profile Details</h2>
+              <span class="status" data-profile-details-status></span>
+            </div>
+            <div data-profile-details></div>
+          </section>
+
+          <div class="metrics" data-profile-metrics aria-label="Profile metrics"></div>
+
+          <section class="section grid-two">
+            <div>
+              <div class="section-title">
+                <h2>My Comments</h2>
+                <span class="status" data-my-comments-status></span>
+              </div>
+              <div class="comment-list" data-my-comments></div>
+            </div>
+
+            <div>
+              <div class="section-title">
+                <h2>Replies To Me</h2>
+                <span class="status" data-replies-status></span>
+              </div>
+              <div class="comment-list" data-replies-to-me></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-title">
+              <h2>My Ratings</h2>
+              <span class="status" data-my-ratings-status></span>
+            </div>
+            <div class="paper-list" data-my-ratings></div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="./mock-data.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

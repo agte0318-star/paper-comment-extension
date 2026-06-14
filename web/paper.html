@@ -15,12 +15,17 @@
         </a>
         <nav class="nav" aria-label="Primary navigation">
           <a href="./trending.html">Trending</a>
+          <a href="./profile.html">My Profile</a>
           <a href="../privacy-policy.html">Privacy</a>
         </nav>
       </header>
 
       <main class="page">
+        <div class="page-notice" data-page-notice hidden></div>
+
         <section class="paper-detail" data-paper-detail></section>
+        <section class="metrics paper-metrics" data-paper-metrics aria-label="Paper discussion metrics"></section>
+
         <section class="section grid-two paper-detail-grid">
           <div>
             <div class="section-title">
@@ -37,8 +42,12 @@
             </div>
             <div class="share-panel">
               <p class="subtle">Send this page to invite discussion without requiring the browser extension.</p>
-              <button class="btn primary" type="button" data-copy-paper-link>Copy link</button>
-              <div class="status" data-copy-status></div>
+              <input class="search share-link-input" type="text" data-paper-share-url readonly aria-label="Shareable discussion link">
+              <div class="share-actions">
+                <button class="btn primary" type="button" data-copy-paper-link>Copy link</button>
+                <button class="btn" type="button" data-share-paper-link>Share</button>
+              </div>
+              <div class="status" data-copy-status aria-live="polite"></div>
             </div>
           </aside>
         </section>

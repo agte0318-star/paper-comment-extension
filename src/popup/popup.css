@@ -1,0 +1,193 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f7f5ef;
+  color: #17211f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 320px;
+  min-height: 360px;
+  margin: 0;
+  background: #f7f5ef;
+}
+
+button {
+  font: inherit;
+}
+
+.popup-shell {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
+}
+
+h1 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.1;
+}
+
+p {
+  margin: 0;
+}
+
+.popup-header p,
+.status-card p,
+.action-list small,
+.popup-footer {
+  color: #66716e;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.status-card {
+  display: grid;
+  grid-template-columns: 10px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid #dce4df;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 999px;
+  background: #9ca3af;
+}
+
+.status-dot.is-signed-in {
+  background: #0f766e;
+}
+
+.status-dot.is-signed-out {
+  background: #d97706;
+}
+
+.status-card strong {
+  display: block;
+  margin-bottom: 2px;
+  color: #17211f;
+  font-size: 13px;
+}
+
+.account-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.account-meta[hidden] {
+  display: none;
+}
+
+.account-meta span {
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #eef4f2;
+  color: #0f5f59;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 740;
+  max-width: 100%;
+}
+
+.action-list {
+  display: grid;
+  gap: 8px;
+}
+
+.action-list button {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 1px solid #dce4df;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #17211f;
+  cursor: pointer;
+  text-align: left;
+}
+
+.action-list button:hover {
+  border-color: rgba(15, 118, 110, 0.36);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.action-list button.primary-action {
+  border-color: rgba(15, 118, 110, 0.28);
+  background: #0f766e;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.18);
+}
+
+.action-list button.primary-action small {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.action-list button.primary-action:hover {
+  border-color: rgba(15, 118, 110, 0.4);
+  background: #0d665f;
+}
+
+.action-list span {
+  font-size: 14px;
+  font-weight: 760;
+}
+
+.action-list small {
+  max-width: 120px;
+  text-align: right;
+}
+
+.popup-footer {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.quiet-button {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid #dce4df;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #4f5d60;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.quiet-button:hover {
+  color: #0f5f59;
+  border-color: rgba(15, 118, 110, 0.34);
+}

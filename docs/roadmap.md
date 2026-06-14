@@ -25,6 +25,9 @@
 - Add authenticated reports queue.
 - Expand user profile controls.
 - Add OAuth sign-in.
+- Add signed-in user home page.
+- Add replies under comments.
+- Improve direct PDF detection and popup discussion fallback.
 
 ## v1.0 Public Launch
 
@@ -33,3 +36,5 @@
 - Stable moderation workflow.
 - ORCID login exploration.
 - Optional Pro feature planning.
+
+See `docs/full-version-todo.md` for the complete implementation checklist.

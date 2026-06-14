@@ -5,6 +5,20 @@
     return String(value || "").replace(/\s+/g, " ").trim();
   }
 
+  function safeDecode(value) {
+    let decoded = String(value || "");
+    for (let index = 0; index < 2; index += 1) {
+      try {
+        const next = decodeURIComponent(decoded);
+        if (next === decoded) break;
+        decoded = next;
+      } catch (error) {
+        break;
+      }
+    }
+    return decoded;
+  }
+
   function getMetaContent(name) {
     const selector = [
       `meta[name="${name}"]`,
@@ -35,14 +49,41 @@
 
   function normalizeDoi(rawDoi) {
     if (!rawDoi) return null;
-    const cleaned = String(rawDoi)
+    const cleaned = safeDecode(rawDoi)
       .replace(/^doi:\s*/i, "")
       .replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, "")
       .trim()
       .replace(/[.,;)\]}>"']+$/g, "");
 
     const match = cleaned.match(/10\.\d{4,9}\/[-._;()/:A-Z0-9]+/i);
+    if (!match) return null;
+    return match[0]
+      .replace(/(?:\.full|\.pdf|\.epdf|\.abstract|\.html)$/i, "")
+      .toLowerCase();
+  }
+
+  function normalizePii(rawPii) {
+    if (!rawPii) return null;
+    const match = safeDecode(rawPii).match(/\bS\d{15,18}\b/i);
     return match ? match[0].toLowerCase() : null;
+  }
+
+  function getSourceUrl() {
+    try {
+      const params = new URLSearchParams(location.search);
+      const pdfViewerSource = params.get("src") || params.get("file");
+      return pdfViewerSource ? safeDecode(pdfViewerSource) : location.href;
+    } catch (error) {
+      return location.href;
+    }
+  }
+
+  function getSourceLocation() {
+    try {
+      return new URL(getSourceUrl());
+    } catch (error) {
+      return location;
+    }
   }
 
   function getJsonLdObjects() {
@@ -224,6 +265,18 @@
     return normalizeDoi(textMatch ? textMatch[0] : null);
   }
 
+  function isPdfLikeUrl(url) {
+    const lowerUrl = safeDecode(url.href || String(url || "")).toLowerCase();
+    const lowerPath = safeDecode(url.pathname || "").toLowerCase();
+    return /\.pdf(?:$|[?#])/i.test(lowerUrl) ||
+      lowerPath.endsWith(".pdf") ||
+      /\/(?:doi\/)?(?:pdf|epdf|pdfdirect|pdfdownload|article-pdf)(?:\/|$)/i.test(lowerPath) ||
+      /\/content\/pdf\//i.test(lowerPath) ||
+      /\/pdfft(?:\/|$)/i.test(lowerPath) ||
+      url.searchParams?.get("format")?.toLowerCase() === "pdf" ||
+      url.searchParams?.get("download")?.toLowerCase() === "pdf";
+  }
+
   function getPaperTitle(fallback) {
     const metaTitle = getFirstMetaContent([
       "citation_title",
@@ -362,8 +415,63 @@
     };
   }
 
+  function detectPdfPaper() {
+    const source = getSourceLocation();
+    const sourceUrl = source.href || location.href;
+    const isPdfUrl = isPdfLikeUrl(source);
+    const hasPdfEmbed = document.contentType === "application/pdf" ||
+      Boolean(document.querySelector('embed[type="application/pdf"], iframe[src$=".pdf"]'));
+    if (!isPdfUrl && !hasPdfEmbed) return null;
+
+    const arxivPathMatch = source.hostname.endsWith("arxiv.org")
+      ? source.pathname.match(/^\/pdf\/([^/?#]+?)(?:\.pdf)?$/i)
+      : null;
+    const arxivId = normalizeArxivId(arxivPathMatch?.[1]);
+    if (arxivId) {
+      return {
+        key: `arxiv:${arxivId}`,
+        source: "arxiv",
+        arxivId,
+        title: getPaperTitle(`arXiv:${arxivId}`),
+        url: sourceUrl
+      };
+    }
+
+    const doi = normalizeDoi(sourceUrl) || findDoiInPage();
+    if (doi) {
+      return {
+        key: `doi:${doi}`,
+        source: getPublisherSource(source.hostname),
+        doi,
+        title: getPaperTitle(`DOI:${doi}`),
+        url: sourceUrl
+      };
+    }
+
+    const pii = normalizePii(source.pathname);
+    if (pii) {
+      return {
+        key: `pii:${pii}`,
+        source: "elsevier",
+        pii,
+        title: getPaperTitle(`PII:${pii.toUpperCase()}`),
+        url: sourceUrl
+      };
+    }
+
+    const title = cleanText(document.title || source.pathname.split("/").pop() || "PDF paper")
+      .replace(/\.pdf\s*$/i, "");
+    const stableUrl = sourceUrl.split("#")[0].replace(/[?&](download|forcedownload|utm_[^=]+)=[^&#]*/gi, "");
+    return {
+      key: `pdf:${stableUrl.toLowerCase()}`,
+      source: getPublisherSource(source.hostname) || "pdf",
+      title: title || "PDF paper",
+      url: sourceUrl
+    };
+  }
+
   function detectPaper() {
-    return detectArxivPaper() || detectDoiPaper() || detectPubmedPaper() || detectPmcPaper();
+    return detectArxivPaper() || detectDoiPaper() || detectPubmedPaper() || detectPmcPaper() || detectPdfPaper();
   }
 
   namespace.detectPaper = detectPaper;

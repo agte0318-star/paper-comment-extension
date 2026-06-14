@@ -40,5 +40,6 @@ if (Test-Path $zipPath) {
 $stagingItems = Get-ChildItem -LiteralPath $stagingDir
 Compress-Archive -Path $stagingItems.FullName -DestinationPath $zipPath -Force
 Remove-Item -LiteralPath $stagingDir -Recurse -Force
+node (Join-Path $PSScriptRoot "check-package.js") $zipPath
 
 Write-Host "Created release package: $zipPath"

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Paper Comments</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="popup-shell">
+      <header class="popup-header">
+        <img src="../../public/icons/icon-48.png" alt="" class="app-icon">
+        <div>
+          <h1>Paper Comments</h1>
+          <p data-version>Academic discussion layer</p>
+        </div>
+      </header>
+
+      <section class="status-card">
+        <span class="status-dot" data-status-dot></span>
+        <div>
+          <strong data-status-title>Checking account</strong>
+          <p data-status-detail>Open a paper page to rate and comment.</p>
+          <div class="account-meta" data-account-meta hidden>
+            <span data-account-email></span>
+            <span data-account-provider></span>
+          </div>
+        </div>
+      </section>
+
+      <nav class="action-list" aria-label="Extension actions">
+        <button type="button" class="primary-action" data-open-current-paper>
+          <span>Current paper</span>
+          <small>Open this tab's discussion</small>
+        </button>
+        <button type="button" data-open-profile>
+          <span>My profile</span>
+          <small>Comments and replies</small>
+        </button>
+        <button type="button" data-open-trending>
+          <span>Trending papers</span>
+          <small>See active discussions</small>
+        </button>
+        <button type="button" data-open-privacy>
+          <span>Privacy policy</span>
+          <small>Data use and permissions</small>
+        </button>
+        <button type="button" data-reset-position>
+          <span>Reset comment button</span>
+          <small>Move the floating button back</small>
+        </button>
+      </nav>
+
+      <footer class="popup-footer">
+        <button type="button" class="quiet-button" data-sign-out hidden>Sign out locally</button>
+        <span data-message></span>
+      </footer>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -63,6 +63,14 @@
     return session?.user || null;
   }
 
+  async function getCurrentProfile() {
+    const user = await getCurrentUser();
+    if (!user) return null;
+
+    const rows = await request(`/rest/v1/profiles?id=eq.${encodeFilter(user.id)}&select=id,display_name,role,status`);
+    return rows[0] || null;
+  }
+
   function getHeaders(session, extra = {}) {
     const token = session?.access_token || config.anonKey;
     return {
@@ -102,9 +110,44 @@
     const text = await response.text();
     const payload = text ? JSON.parse(text) : null;
     if (!response.ok) {
-      throw new Error(payload?.msg || payload?.message || payload?.error_description || "Authentication failed.");
+      const rawMessage = payload?.msg || payload?.message || payload?.error_description || "Authentication failed.";
+      const error = new Error(getAuthErrorMessage(payload, rawMessage));
+      error.code = payload?.error_code || payload?.code || "";
+      throw error;
     }
     return payload;
+  }
+
+  function getAuthErrorMessage(payload, rawMessage) {
+    const code = payload?.error_code || payload?.code || "";
+    const message = String(rawMessage || "").toLowerCase();
+
+    if (code === "email_address_invalid" || message.includes("email address") && message.includes("invalid")) {
+      return "Use a real email address. Temporary or example emails may be blocked by Supabase.";
+    }
+    if (code === "weak_password" || message.includes("password")) {
+      return rawMessage || "Use a stronger password.";
+    }
+    if (code === "signup_disabled") {
+      return "Sign ups are disabled in Supabase. Enable new user signups in Authentication settings.";
+    }
+    if (code === "email_provider_disabled") {
+      return "Email/password sign-in is disabled in Supabase. Enable the Email provider in Authentication.";
+    }
+    if (code === "over_email_send_rate_limit") {
+      return "Too many confirmation emails were requested. Wait a while and try again.";
+    }
+    if (code === "email_not_confirmed") {
+      return "Confirm your email first, then sign in.";
+    }
+    if (code === "user_not_found" || message.includes("invalid login credentials")) {
+      return "Email or password is incorrect.";
+    }
+    if (code === "user_already_exists" || message.includes("already registered")) {
+      return "This email is already registered. Try Sign in instead.";
+    }
+
+    return rawMessage || "Authentication failed.";
   }
 
   async function refreshSession(session) {
@@ -126,6 +169,18 @@
     const payload = await authRequest("/auth/v1/token?grant_type=password", { email, password });
     await setSession(payload);
     return payload;
+  }
+
+  async function sendPasswordReset(email) {
+    return authRequest("/auth/v1/recover", { email });
+  }
+
+  async function signInWithGoogle() {
+    const response = await chrome.runtime.sendMessage({ type: "PCE_SIGN_IN_WITH_GOOGLE" });
+    if (!response?.ok) {
+      throw new Error(response?.error || "Google sign-in failed.");
+    }
+    return response.session;
   }
 
   async function signOut() {
@@ -179,12 +234,15 @@
     const commentIds = comments.map((comment) => comment.id);
     const userIds = [...new Set(comments.map((comment) => comment.user_id))];
 
-    const [ratings, likes] = await Promise.all([
+    const [ratings, likes, replies] = await Promise.all([
       userIds.length
         ? request(`/rest/v1/ratings?paper_id=eq.${paperId}&user_id=in.(${userIds.join(",")})&select=user_id,overall_score`)
         : [],
       commentIds.length
         ? request(`/rest/v1/comment_likes?comment_id=in.(${commentIds.join(",")})&select=comment_id,user_id`)
+        : [],
+      commentIds.length
+        ? request(`/rest/v1/comment_replies?comment_id=in.(${commentIds.join(",")})&status=eq.visible&select=id,comment_id,user_id,content,created_at,profiles(display_name)&order=created_at.asc`).catch(() => [])
         : []
     ]);
 
@@ -195,6 +253,19 @@
       list.push(like.user_id);
       likesByComment.set(like.comment_id, list);
     }
+    const repliesByComment = new Map();
+    for (const reply of replies) {
+      const list = repliesByComment.get(reply.comment_id) || [];
+      list.push({
+        id: reply.id,
+        commentId: reply.comment_id,
+        userId: reply.user_id,
+        author: reply.profiles?.display_name || "Reader",
+        content: reply.content,
+        createdAt: reply.created_at
+      });
+      repliesByComment.set(reply.comment_id, list);
+    }
 
     return comments.map((comment) => ({
       id: comment.id,
@@ -203,6 +274,8 @@
       content: comment.content,
       likeCount: comment.like_count || 0,
       likedBy: likesByComment.get(comment.id) || [],
+      replies: repliesByComment.get(comment.id) || [],
+      replyCount: (repliesByComment.get(comment.id) || []).length,
       ratingScore: ratingByUser.get(comment.user_id) || null,
       createdAt: comment.created_at
     }));
@@ -230,6 +303,22 @@
         user_id: user.id,
         content: input.content.trim(),
         local_date: getLocalDateKey()
+      }
+    });
+  }
+
+  async function addReply(paperKey, commentId, input, paper) {
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Sign in to reply.");
+
+    const paperRow = await ensurePaper(paper);
+    await request("/rest/v1/comment_replies", {
+      method: "POST",
+      body: {
+        comment_id: commentId,
+        paper_id: paperRow.id,
+        user_id: user.id,
+        content: input.content.trim()
       }
     });
   }
@@ -307,15 +396,51 @@
     });
   }
 
+  async function reportComment(paperKey, commentId, input) {
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Sign in to report comments.");
+
+    await request("/rest/v1/reports", {
+      method: "POST",
+      body: {
+        comment_id: commentId,
+        user_id: user.id,
+        reason: input.reason,
+        details: input.details?.trim() || null
+      }
+    });
+  }
+
+  async function reportReply(paperKey, replyId, input) {
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Sign in to report replies.");
+
+    await request("/rest/v1/reply_reports", {
+      method: "POST",
+      body: {
+        reply_id: replyId,
+        user_id: user.id,
+        reason: input.reason,
+        details: input.details?.trim() || null
+      }
+    });
+  }
+
   namespace.cloudStore = {
     isConfigured,
     getCurrentUser,
+    getCurrentProfile,
     signUp,
     signIn,
+    signInWithGoogle,
+    sendPasswordReset,
     signOut,
     listComments,
     addComment,
+    addReply,
     toggleCommentLike,
+    reportComment,
+    reportReply,
     hasCommentedToday,
     getLocalUserId: async () => (await getCurrentUser())?.id || null,
     getPaperRating,
