@@ -415,6 +415,21 @@
     };
   }
 
+  function detectPiiPaper() {
+    if (!location.hostname.endsWith("sciencedirect.com")) return null;
+    const pii = normalizePii(location.pathname) ||
+      normalizePii(getFirstMetaContent(["citation_pii", "pii", "dc.identifier", "DC.Identifier"]));
+    if (!pii) return null;
+
+    return {
+      key: `pii:${pii}`,
+      source: "elsevier",
+      pii,
+      title: getPaperTitle(`PII:${pii.toUpperCase()}`),
+      url: location.href
+    };
+  }
+
   function detectPdfPaper() {
     const source = getSourceLocation();
     const sourceUrl = source.href || location.href;
@@ -471,7 +486,7 @@
   }
 
   function detectPaper() {
-    return detectArxivPaper() || detectDoiPaper() || detectPubmedPaper() || detectPmcPaper() || detectPdfPaper();
+    return detectArxivPaper() || detectDoiPaper() || detectPiiPaper() || detectPubmedPaper() || detectPmcPaper() || detectPdfPaper();
   }
 
   namespace.detectPaper = detectPaper;

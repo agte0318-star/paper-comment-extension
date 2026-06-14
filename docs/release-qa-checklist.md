@@ -20,6 +20,8 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Confirm `release:status` shows `manual-test-results.md` metadata for the current version, release zip, and packaged manual-test folder.
 - Run `npm.cmd run check:public-urls` after pushing to GitHub to confirm the homepage, web app pages, privacy policy, and support page are publicly reachable.
 - Run `npm.cmd run check:public-web-render` after GitHub Pages deploys to confirm public pages render in a real browser and core public interactions work.
+- Run `npm.cmd run check:extension-auth-gates` to confirm signed-out extension actions open the correct sign-in modal and comment sorting works in a real browser with privacy-safe demo data.
+- Run `npm.cmd run check:extension-demo-interactions` to confirm signed-in rating, comment, one-comment-per-day, like, reply, report, and share-image flows work in a real browser with privacy-safe demo data.
 - Confirm `release/store-assets/<version>/reviewer-notes.md` exists for Chrome Web Store reviewer notes.
 - Open `release/store-assets/<version>/manual-test-links.html` as the central link page for manual QA.
 
@@ -39,6 +41,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 
 - Open a supported paper page.
 - Click the comments button.
+- Run `npm.cmd run check:extension-auth-gates` for an automated signed-out auth-gate and comment sorting check.
 - Click `Rate`, `Post comment`, `Like`, `Reply`, and `Report` while signed out.
 - Confirm each action opens the sign-in dialog with a relevant message.
 - Create a test email/password account.
@@ -57,6 +60,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Test one ACS or ScienceDirect article page.
 - Confirm the sidebar appears where supported.
 - Confirm the paper title and identifier are correct.
+- Run `npm.cmd run check:extension-demo-interactions` for an automated signed-in interaction check with demo data.
 - Submit one rating.
 - Confirm the community average rating updates.
 - Submit one comment.

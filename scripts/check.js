@@ -24,6 +24,8 @@ const requiredFiles = [
   "index.html",
   "privacy-policy.html",
   "support.html",
+  "scripts/check-extension-auth-gates.js",
+  "scripts/check-extension-demo-interactions.js",
   "scripts/check-package.js",
   "scripts/check-public-urls.js",
   "scripts/check-public-web-render.js",
@@ -438,9 +440,25 @@ const detectionCases = [
     expectedKey: "doi:10.1002/adma.202407889"
   },
   {
+    name: "Wiley article DOI URL",
+    url: "https://onlinelibrary.wiley.com/doi/10.1002/adma.202407889",
+    expectedKey: "doi:10.1002/adma.202407889",
+    meta: {
+      citation_title: "Advanced Materials Example"
+    }
+  },
+  {
     name: "Springer content PDF DOI URL",
     url: "https://link.springer.com/content/pdf/10.1007/s10853-024-12345-6.pdf",
     expectedKey: "doi:10.1007/s10853-024-12345-6"
+  },
+  {
+    name: "Springer article DOI URL",
+    url: "https://link.springer.com/article/10.1007/s10853-024-12345-6",
+    expectedKey: "doi:10.1007/s10853-024-12345-6",
+    meta: {
+      citation_title: "Springer Example Article"
+    }
   },
   {
     name: "Chrome PDF viewer ACS source URL",
@@ -448,9 +466,25 @@ const detectionCases = [
     expectedKey: "doi:10.1021/acsnano.4c01234"
   },
   {
+    name: "ACS article DOI URL",
+    url: "https://pubs.acs.org/doi/10.1021/acsnano.4c01234",
+    expectedKey: "doi:10.1021/acsnano.4c01234",
+    meta: {
+      citation_title: "ACS Nano Example Article"
+    }
+  },
+  {
     name: "ScienceDirect PII PDF URL",
     url: "https://www.sciencedirect.com/science/article/pii/S2590238524000010/pdfft?isDTMRedir=true",
     expectedKey: "pii:s2590238524000010"
+  },
+  {
+    name: "ScienceDirect article PII URL",
+    url: "https://www.sciencedirect.com/science/article/pii/S2590238524000010",
+    expectedKey: "pii:s2590238524000010",
+    meta: {
+      citation_title: "ScienceDirect Example Article"
+    }
   },
   {
     name: "PubMed article URL",

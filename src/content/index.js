@@ -1307,22 +1307,38 @@
 
     const blob = await getCanvasBlob(canvas);
     const fileName = `paper-comment-${comment.id}.png`;
-    const file = new File([blob], fileName, { type: "image/png" });
 
-    if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
-      await navigator.share({
-        files: [file],
-        title: "Paper Comment",
-        text: `Comment on ${paper.title || paper.key}`
-      });
-      return;
+    let canUseNativeShare = false;
+    let file = null;
+    try {
+      file = new File([blob], fileName, { type: "image/png" });
+      canUseNativeShare = Boolean(navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share);
+    } catch (error) {
+      canUseNativeShare = false;
+    }
+
+    if (canUseNativeShare) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: "Paper Comment",
+          text: `Comment on ${paper.title || paper.key}`
+        });
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") throw error;
+      }
     }
 
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
     link.download = fileName;
-    link.click();
+    try {
+      link.click();
+    } catch (error) {
+      // Some automated or locked-down browser contexts block synthetic downloads.
+    }
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 

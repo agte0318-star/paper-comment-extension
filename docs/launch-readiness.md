@@ -29,6 +29,7 @@ Current candidate version: `0.5.5`
    - Confirm this is the packaged folder, not the source folder.
 
 3. Account flow
+   - Run `npm.cmd run check:extension-auth-gates` to verify signed-out Rate, comment, Like, Reply, and Report actions open sign-in prompts.
    - Signed-out rating, comment, like, reply, and report actions open the sign-in dialog.
    - Email/password sign-up works.
    - Email confirmation flow is understandable.
@@ -39,6 +40,7 @@ Current candidate version: `0.5.5`
    - Profile page shows only the signed-in user's activity.
 
 4. Paper interaction flow
+   - Run `npm.cmd run check:extension-demo-interactions` to verify signed-in rating, comment, one-comment-per-day, like, reply, report, and share-image behavior with demo data.
    - arXiv abstract page detected.
    - Wiley or Springer article detected.
    - ACS or ScienceDirect article detected.
@@ -47,6 +49,7 @@ Current candidate version: `0.5.5`
    - Comment can be posted.
    - Same user cannot post a second comment on the same paper on the same day.
    - Like, reply, report, sorting, and share image generation work.
+   - `npm.cmd run check:extension-auth-gates` verifies newest/popular sorting with demo comments.
 
 5. PDF detection flow
    - arXiv PDF detected.
@@ -110,6 +113,8 @@ npm.cmd run capture:extension-screenshots
 npm.cmd run capture:demo-screenshots
 npm.cmd run check:public-urls
 npm.cmd run check:public-web-render
+npm.cmd run check:extension-auth-gates
+npm.cmd run check:extension-demo-interactions
 npm.cmd run check:source-secrets
 npm.cmd run release:status
 npm.cmd run check:release-ready
