@@ -10,6 +10,7 @@
     "check:release-ready": "node scripts/check-release-ready.js",
     "check:source-secrets": "node scripts/check-source-secrets.js",
     "capture:extension-screenshots": "node scripts/capture-extension-screenshots.js",
+    "capture:demo-screenshots": "node scripts/capture-demo-interaction-screenshots.js",
     "capture:web-screenshots": "powershell -ExecutionPolicy Bypass -File scripts/capture-web-screenshots.ps1",
     "icons": "powershell -ExecutionPolicy Bypass -File scripts/generate-icons.ps1",
     "package": "powershell -ExecutionPolicy Bypass -File scripts/package-extension.ps1",

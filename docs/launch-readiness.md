@@ -9,7 +9,7 @@ Current candidate version: `0.5.5`
 - Release package: `release/paper-comment-extension-0.5.5.zip`
 - Packaged manual-test folder: `release/manual-test/paper-comment-extension-0.5.5`
 - Store assets folder: `release/store-assets/0.5.5`
-- Screenshots: `7/11` valid
+- Screenshots: `11/11` valid
 - Manual QA: pending
 - Upload gate: `npm.cmd run check:release-ready`
 - Current upload status: not ready
@@ -76,8 +76,9 @@ Current candidate version: `0.5.5`
    - Cloud comments, ratings, likes, replies, and reports remain signed-in only.
 
 8. Screenshots
-   - Already generated: `01`, `02`, `03`, `08`, `09`, `10`, `11`.
-   - Still missing:
+   - Already generated: `01`, `02`, `03`, `04`, `05`, `06`, `07`, `08`, `09`, `10`, `11`.
+   - To auto-capture the signed-in interaction screenshots without exposing real emails, run `npm.cmd run capture:demo-screenshots`. This creates a temporary demo extension copy under `release/`; it does not change the release zip.
+   - If regenerating, confirm these files exist:
      - `04-rating-panel.png`
      - `05-comment-rated.png`
      - `06-comment-replies-actions.png`
@@ -105,6 +106,7 @@ Current candidate version: `0.5.5`
 npm.cmd run release:prepare
 npm.cmd run capture:web-screenshots
 npm.cmd run capture:extension-screenshots
+npm.cmd run capture:demo-screenshots
 npm.cmd run check:public-urls
 npm.cmd run check:source-secrets
 npm.cmd run release:status

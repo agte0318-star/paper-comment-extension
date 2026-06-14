@@ -100,6 +100,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Use the generated `screenshot-checklist.md`, `screenshot-capture-guide.md`, and `store-links.txt` files in `release/store-assets/<version>/`.
 - Run `npm.cmd run capture:web-screenshots` to auto-capture the public web screenshots for trending, paper discussion, and profile pages when Microsoft Edge is installed.
 - Run `npm.cmd run capture:extension-screenshots` to auto-capture signed-out extension screenshots on a real arXiv page.
+- Run `npm.cmd run capture:demo-screenshots` to auto-capture the signed-in rating, rated comment, replies, and report-form screenshots with privacy-safe demo data from a temporary extension copy under `release/`.
 - To capture the signed-in interaction screenshots, temporarily set `PCE_TEST_AUTHOR_EMAIL`, `PCE_TEST_AUTHOR_PASSWORD`, `PCE_TEST_EMAIL`, and `PCE_TEST_PASSWORD` in the current terminal only, then rerun `npm.cmd run capture:extension-screenshots`. Never write test passwords into repo files.
 - Save screenshots as full-bleed PNG files at `1280x800` or `640x400`; prefer `1280x800`.
 

@@ -28,6 +28,7 @@ const requiredFiles = [
   "scripts/check-public-urls.js",
   "scripts/check-release-ready.js",
   "scripts/check-source-secrets.js",
+  "scripts/capture-demo-interaction-screenshots.js",
   "scripts/capture-extension-screenshots.js",
   "scripts/capture-web-screenshots.ps1",
   "scripts/prepare-manual-test.ps1",
