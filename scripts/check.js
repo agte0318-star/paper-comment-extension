@@ -253,6 +253,7 @@ const homeHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const supportHtml = fs.readFileSync(path.join(root, "support.html"), "utf8");
 const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
 const storeListing = fs.readFileSync(path.join(root, "docs/store-listing.md"), "utf8");
+const chromeStoreSubmission = fs.readFileSync(path.join(root, "docs/chrome-web-store-submission.md"), "utf8");
 const requiredWebExperienceSnippets = [
   { name: "trending search input", source: trendingHtml, value: "data-trending-search" },
   { name: "trending sort select", source: trendingHtml, value: "data-trending-sort" },
@@ -283,6 +284,33 @@ const requiredSupportSnippets = [
 for (const snippet of requiredSupportSnippets) {
   if (!snippet.source.includes(snippet.value)) {
     console.error(`Missing support or website link: ${snippet.name}`);
+    hasError = true;
+  }
+}
+
+const requiredChromeStoreSubmissionSnippets = [
+  { name: "release prepare pipeline", value: "npm.cmd run release:prepare" },
+  { name: "public URL check", value: "npm.cmd run check:public-urls" },
+  { name: "web render check", value: "npm.cmd run check:public-web-render" },
+  { name: "web auth/admin check", value: "npm.cmd run check:web-auth-admin-state" },
+  { name: "extension auth gate check", value: "npm.cmd run check:extension-auth-gates" },
+  { name: "extension demo interaction check", value: "npm.cmd run check:extension-demo-interactions" },
+  { name: "popup current paper check", value: "npm.cmd run check:popup-current-paper" },
+  { name: "popup account state check", value: "npm.cmd run check:popup-account-state" },
+  { name: "source secret check", value: "npm.cmd run check:source-secrets" },
+  { name: "real account QA helper", value: "npm.cmd run qa:account" },
+  { name: "account QA finalizer", value: "npm.cmd run finalize:account-qa" },
+  { name: "release status", value: "npm.cmd run release:status" },
+  { name: "release readiness gate", value: "npm.cmd run check:release-ready" },
+  { name: "private data warning", value: "Do not paste real passwords, private email inbox contents, Supabase service-role keys, OAuth client secrets, or Chrome Web Store credentials into any repo file" },
+  { name: "store package path", value: "release/paper-comment-extension-0.5.5.zip" },
+  { name: "store screenshot folder", value: "release/store-assets/0.5.5/screenshots/" },
+  { name: "unlisted beta visibility", value: "Recommended first visibility: `Unlisted`" }
+];
+
+for (const snippet of requiredChromeStoreSubmissionSnippets) {
+  if (!chromeStoreSubmission.includes(snippet.value)) {
+    console.error(`Chrome Web Store submission doc is missing: ${snippet.name}`);
     hasError = true;
   }
 }

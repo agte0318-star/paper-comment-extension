@@ -76,23 +76,58 @@ Moderation actions are enforced by Supabase RLS and RPC functions. Admin-only ac
 
 ## Required Final Commands
 
-Run these commands before uploading:
+Run the current release-preparation pipeline first. It runs local checks, source-secret scanning, Google OAuth diagnostics, the account QA finalizer self-check, packaging, package validation, manual-test folder preparation, store-asset preparation, and release status:
 
 ```powershell
-npm.cmd run check
-npm.cmd run package
-npm.cmd run check:package
-npm.cmd run prepare:manual-test
-npm.cmd run prepare:store-assets
+npm.cmd run release:prepare
 ```
 
 Then load `release/manual-test/paper-comment-extension-0.5.5` in `chrome://extensions` and complete `docs/release-qa-checklist.md`. For step-by-step Chinese instructions, use `docs/manual-test-guide-zh.md`.
-Record the results in `release/store-assets/0.5.5/manual-test-results.md`.
-After manual testing and screenshots are complete, run:
+
+Refresh screenshots and public-page checks:
 
 ```powershell
+npm.cmd run capture:web-screenshots
+npm.cmd run capture:extension-screenshots
+npm.cmd run capture:demo-screenshots
+npm.cmd run check:public-urls
+npm.cmd run check:public-web-render
+npm.cmd run check:web-auth-admin-state
+npm.cmd run check:extension-auth-gates
+npm.cmd run check:extension-demo-interactions
+npm.cmd run check:popup-current-paper
+npm.cmd run check:popup-account-state
+npm.cmd run check:source-secrets
+```
+
+Complete the remaining real-account QA. Do not paste real passwords, private email inbox contents, Supabase service-role keys, OAuth client secrets, or Chrome Web Store credentials into any repo file:
+
+```powershell
+npm.cmd run qa:account
+npm.cmd run finalize:account-qa
+```
+
+After manual testing and screenshots are complete, run the final gate:
+
+```powershell
+npm.cmd run release:status
 npm.cmd run check:release-ready
 ```
+
+Only upload `release/paper-comment-extension-0.5.5.zip` if `check:release-ready` passes.
+
+## Chrome Web Store Fields To Fill
+
+- Package: `release/paper-comment-extension-0.5.5.zip`
+- Store listing text: copy from `docs/store-listing.md`.
+- Website URL: `https://agte0318-star.github.io/paper-comment-extension/`
+- Support URL: `https://agte0318-star.github.io/paper-comment-extension/support.html`
+- Privacy Policy URL: `https://agte0318-star.github.io/paper-comment-extension/privacy-policy.html`
+- Reviewer notes: copy from `release/store-assets/0.5.5/reviewer-notes.md`.
+- Screenshots folder: `release/store-assets/0.5.5/screenshots/`
+- Manual QA record for your archive: `release/store-assets/0.5.5/manual-test-results.md`
+
+Recommended first visibility: `Unlisted`, then switch broader only after the store-installed extension is tested.
 
 ## Do Not Upload Until
 
