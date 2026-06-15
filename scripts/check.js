@@ -43,6 +43,7 @@ const requiredFiles = [
   "scripts/prepare-store-assets.ps1",
   "scripts/release-status.js",
   "docs/full-version-todo.md",
+  "docs/final-account-qa-zh.md",
   "docs/launch-readiness.md",
   "docs/privacy-policy.md",
   "docs/release-qa-checklist.md",
