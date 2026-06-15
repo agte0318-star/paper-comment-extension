@@ -61,6 +61,17 @@ function getMetadataValue(source, label) {
   return match ? match[1].trim() : "";
 }
 
+function getResultItems(source, result) {
+  const items = [];
+  const pattern = new RegExp(`^\\|\\s*([^|]+?)\\s*\\|\\s*${result}\\s*\\|`, "gim");
+  let match;
+  while ((match = pattern.exec(source))) {
+    const item = match[1].trim();
+    if (item && item !== "Item") items.push(item);
+  }
+  return items;
+}
+
 assertExists(zipPath, "Release package");
 assertExists(manualTestDir, "Packaged manual-test folder");
 assertExists(assetDir, "Store asset folder");
@@ -110,6 +121,19 @@ if (fs.existsSync(manualResultsPath)) {
   }
   if (/\|\s*Pending\s*\|/i.test(manualResults)) {
     fail("Manual test results still contain Pending table items.");
+    const pendingItems = getResultItems(manualResults, "Pending");
+    for (const item of pendingItems) {
+      fail(`Pending manual QA item: ${item}`);
+    }
+    if (pendingItems.some((item) => [
+      "Email/password account creation works",
+      "Email confirmation flow is understandable",
+      "Email/password sign-in works",
+      "Password reset email can be requested",
+      "Google sign-in works if configured"
+    ].includes(item))) {
+      fail("Account QA is still pending. Run `npm.cmd run qa:account`, then `npm.cmd run finalize:account-qa` after real checks are complete.");
+    }
   }
   if (/\|\s*Fail\s*\|/i.test(manualResults)) {
     fail("Manual test results contain failing items.");

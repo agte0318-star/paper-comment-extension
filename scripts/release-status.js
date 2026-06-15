@@ -88,9 +88,22 @@ function getManualSectionSummaries(source) {
   return getSectionBlocks(source)
     .map((section) => ({
       title: section.title,
+      pendingItems: getResultItems(section.body, "Pending"),
+      failedItems: getResultItems(section.body, "Fail"),
       ...countResultRows(section.body)
     }))
     .filter((section) => section.pending || section.failed || section.passed);
+}
+
+function getResultItems(source, result) {
+  const items = [];
+  const pattern = new RegExp(`^\\|\\s*([^|]+?)\\s*\\|\\s*${result}\\s*\\|`, "gim");
+  let match;
+  while ((match = pattern.exec(source))) {
+    const item = match[1].trim();
+    if (item && item !== "Item") items.push(item);
+  }
+  return items;
 }
 
 function getManualSummary() {
@@ -236,6 +249,12 @@ function printManualSections(sections) {
         ? "pending"
         : "complete";
     console.log(`  - ${section.title}: ${section.passed} pass, ${section.pending} pending, ${section.failed} fail (${status})`);
+    for (const item of section.pendingItems || []) {
+      console.log(`      pending: ${item}`);
+    }
+    for (const item of section.failedItems || []) {
+      console.log(`      fail: ${item}`);
+    }
   }
 }
 
@@ -316,6 +335,12 @@ if (!ready) {
   if (manual.exists && !manual.submittedVersion.includes(version)) console.log(`  - Update manual-test-results.md Submitted version to include ${version}.`);
   if (manual.pending > 0 || manual.failed > 0 || !manual.ready) {
     console.log("  - Complete release/store-assets/<version>/manual-test-results.md.");
+    const accountSection = manual.sections.find((section) => section.title === "Account Flow");
+    if (accountSection?.pending) {
+      console.log("  - Run npm.cmd run qa:account for the guided real-account check.");
+      console.log("  - Run npm.cmd run finalize:account-qa after each account item is truly verified.");
+      console.log("  - Re-run npm.cmd run release:status, then npm.cmd run check:release-ready.");
+    }
   }
   if (screenshots.missing.length || screenshots.invalid.length) {
     console.log("  - Save all required screenshots as 1280x800 or 640x400 PNG files.");
