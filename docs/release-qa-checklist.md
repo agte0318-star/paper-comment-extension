@@ -20,6 +20,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Confirm `release:status` shows `manual-test-results.md` metadata for the current version, release zip, and packaged manual-test folder.
 - Run `npm.cmd run check:public-urls` after pushing to GitHub to confirm the homepage, web app pages, privacy policy, and support page are publicly reachable.
 - Run `npm.cmd run check:public-web-render` after GitHub Pages deploys to confirm public pages render in a real browser and core public interactions work.
+- Run `npm.cmd run check:web-auth-admin-state` after GitHub Pages deploys to confirm mocked signed-in profile activity, non-admin admin denial, and active-admin dashboard rendering in a real browser.
 - Run `npm.cmd run check:extension-auth-gates` to confirm signed-out extension actions open the correct sign-in modal and comment sorting works in a real browser with privacy-safe demo data.
 - Run `npm.cmd run check:extension-demo-interactions` to confirm signed-in rating, comment, one-comment-per-day, like, reply, report, and share-image flows work in a real browser with privacy-safe demo data.
 - Run `npm.cmd run check:popup-current-paper` to confirm the popup current-paper action builds correct fallback discussion URLs for PDF and PDF-viewer tabs.
@@ -101,6 +102,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Copy and share the discussion URL.
 - Open `web/profile.html`.
 - Confirm signed-out users see the auth panel.
+- Run `npm.cmd run check:web-auth-admin-state` to verify signed-in profile rendering and admin permission branches with privacy-safe mocked Supabase responses.
 - Sign in and confirm comments, replies, likes, ratings, and profile details load.
 - Open `web/admin.html` with a non-admin account and confirm access is denied.
 - Open `web/admin.html` with an active admin account and confirm moderation actions are visible.

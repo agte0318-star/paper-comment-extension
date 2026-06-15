@@ -67,6 +67,7 @@ Current candidate version: `0.5.5`
 6. Public web pages
    - Run `npm.cmd run check:public-urls` after every GitHub push used for store submission.
    - Run `npm.cmd run check:public-web-render` after GitHub Pages deploys to verify browser rendering and public interactions.
+   - Run `npm.cmd run check:web-auth-admin-state` after GitHub Pages deploys to verify mocked signed-in profile activity, non-admin admin denial, and active-admin dashboard rendering.
    - Homepage opens.
    - Trending page opens and renders data or empty state.
    - Search and sorting work.
@@ -117,6 +118,7 @@ npm.cmd run capture:extension-screenshots
 npm.cmd run capture:demo-screenshots
 npm.cmd run check:public-urls
 npm.cmd run check:public-web-render
+npm.cmd run check:web-auth-admin-state
 npm.cmd run check:extension-auth-gates
 npm.cmd run check:extension-demo-interactions
 npm.cmd run check:popup-current-paper

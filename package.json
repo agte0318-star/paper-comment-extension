@@ -13,6 +13,7 @@
     "check:popup-current-paper": "node scripts/check-popup-current-paper.js",
     "check:public-urls": "node scripts/check-public-urls.js",
     "check:public-web-render": "node scripts/check-public-web-render.js",
+    "check:web-auth-admin-state": "node scripts/check-web-auth-admin-state.js",
     "check:release-ready": "node scripts/check-release-ready.js",
     "check:source-secrets": "node scripts/check-source-secrets.js",
     "capture:extension-screenshots": "node scripts/capture-extension-screenshots.js",

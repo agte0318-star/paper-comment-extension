@@ -32,6 +32,7 @@ const requiredFiles = [
   "scripts/check-popup-current-paper.js",
   "scripts/check-public-urls.js",
   "scripts/check-public-web-render.js",
+  "scripts/check-web-auth-admin-state.js",
   "scripts/check-release-ready.js",
   "scripts/check-source-secrets.js",
   "scripts/capture-demo-interaction-screenshots.js",
