@@ -62,7 +62,7 @@ This todo list defines the path from the current beta extension to a polished pu
 - [x] Add popup action: open discussion for current PDF.
 - [x] Document Chrome built-in PDF viewer limitations.
 - [x] Add static regression coverage for PubMed, PMC, preprints, publisher DOI metadata, DOI links, JSON-LD, PII, and PDF fallback detection.
-- [ ] Test direct PDFs from arXiv, Wiley, Springer, ACS, ScienceDirect, and journal-hosted PDFs.
+- [x] Test direct PDFs from arXiv, Wiley, Springer, ACS, ScienceDirect, and journal-hosted PDFs.
 
 ## Phase 6 - Web Experience
 
@@ -95,10 +95,10 @@ This todo list defines the path from the current beta extension to a polished pu
 - [x] Add a local command to auto-capture the public web screenshots.
 - [x] Add a local command to auto-capture signed-out extension screenshots on a real paper page.
 - [x] Add an optional two-test-account path for capturing signed-in rating, comment, reply, and report screenshots.
-- [ ] Add final store screenshots.
-- [ ] Add screenshots for sidebar, rating, sign-in, popup, trending page, and profile page.
+- [x] Add final store screenshots.
+- [x] Add screenshots for sidebar, rating, sign-in, popup, trending page, and profile page.
 - [x] Add support contact and website links.
-- [ ] Test extension after packaging, not only unpacked development files.
+- [x] Test extension after packaging, not only unpacked development files.
 - [x] Bump version for every submitted package.
 
 ## Phase 8 - Growth Without Losing Trust
@@ -113,7 +113,7 @@ This todo list defines the path from the current beta extension to a polished pu
 ## Do Not Do Yet
 
 - [x] Do not add anonymous ratings before rate limiting and abuse controls.
-- [ ] Do not add paid features before moderation and auth are stable.
+- [x] Do not add paid features before moderation and auth are stable.
 - [x] Do not request broad browser permissions just to make detection easier.
 - [x] Do not store article PDFs, full text, figures, tables, or screenshots.
 - [x] Do not make admin actions front-end only.
