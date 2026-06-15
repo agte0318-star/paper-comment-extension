@@ -36,7 +36,11 @@ function main() {
     "yes", // password reset
     "yes", // Google OAuth configured
     "yes", // Google sign-in worked
-    "yes" // Ready to upload
+    "yes", // Ready to upload
+    "2026-06-15", // final QA date
+    "Automated finalizer self-check",
+    "Chrome packaged extension manual test",
+    "Reader/fresh test accounts verified; no private email recorded"
   ].join("\n") + "\n";
 
   const result = childProcess.spawnSync(process.execPath, [path.join(root, "scripts", "finalize-account-qa.js")], {
@@ -64,6 +68,11 @@ function main() {
     }
   }
   assert(!/\| [^|]+ \| Pending \|/.test(updated), "Pending table rows remain after all-yes finalizer run.");
+  assert(updated.includes("- Date: 2026-06-15"), "Final QA date was not updated.");
+  assert(updated.includes("- Tester: Automated finalizer self-check"), "Tester metadata was not updated.");
+  assert(updated.includes("- Browser: Chrome packaged extension manual test"), "Browser metadata was not updated.");
+  assert(updated.includes("- Test account email alias or label: Reader/fresh test accounts verified; no private email recorded"), "Test account label was not updated.");
+  assert(updated.includes("- Google OAuth tested: Verified in packaged extension and GitHub Pages profile page"), "Google OAuth metadata was not updated.");
   assert(updated.includes("- Ready to upload: Yes"), "Ready to upload was not set to Yes.");
   assert(updated.includes("- Chrome Web Store status: Ready to submit"), "Chrome Web Store status was not set to Ready to submit.");
   assert(countMatches(updated, /\| Google sign-in works if configured \| Pass \|/g) === 1, "Google QA row was duplicated or missing.");

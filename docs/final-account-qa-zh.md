@@ -83,6 +83,8 @@ npm.cmd run finalize:account-qa
 
 它只会更新你逐项回答 `yes` 的账号 QA 行；如果还有任何 `Pending`，不会把 `Ready to upload` 改成 `Yes`。
 
+当所有账号项都已经确认且你同意设置 `Ready to upload: Yes` 时，它还会提示你填写最终 QA 日期、测试者标签、浏览器标签、测试账号标签和 Google OAuth 状态。这里不要填写真实邮箱或密码，只写类似 `Reader/fresh test accounts verified; no private email recorded` 这种无隐私标签。
+
 Google 登录只能在浏览器里真实点一次验证。步骤：
 
 先运行配置诊断：

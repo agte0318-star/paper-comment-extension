@@ -25,6 +25,20 @@ function ask(question) {
   });
 }
 
+function askText(question, defaultValue) {
+  const suffix = defaultValue ? ` [${defaultValue}] ` : " ";
+  if (scriptedAnswers) {
+    const answer = scriptedAnswers.shift() || "";
+    console.log(`${question}${suffix}${answer}`);
+    return Promise.resolve(answer.trim() || defaultValue || "");
+  }
+  return new Promise((resolve) => {
+    rl.question(`${question}${suffix}`, (answer) => {
+      resolve(answer.trim() || defaultValue || "");
+    });
+  });
+}
+
 function replaceRow(content, item, result, notes) {
   const escaped = item.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const pattern = new RegExp(`^\\| ${escaped} \\| [^|]+ \\|[^|]*\\|$`, "m");
@@ -68,8 +82,10 @@ async function main() {
     if (await ask(check.question)) updates.push({ ...check, result: "Pass" });
   }
 
+  let googleOAuthStatus = "Pending manual test";
   if (await ask("Is Google OAuth configured for this release?")) {
     if (await ask("Did Google sign-in work in the packaged extension and on the GitHub Pages profile page?")) {
+      googleOAuthStatus = "Verified in packaged extension and GitHub Pages profile page";
       updates.push({
         item: "Google sign-in works if configured",
         result: "Pass",
@@ -77,6 +93,7 @@ async function main() {
       });
     }
   } else if (await ask("Record Google OAuth as not configured for this release?")) {
+    googleOAuthStatus = "Not configured for this release";
     updates.push({
       item: "Google sign-in works if configured",
       result: "Pass",
@@ -95,7 +112,18 @@ async function main() {
   }
 
   if (!/\| [^|]+ \| Pending \|/.test(content) && await ask("No Pending table rows remain. Set Ready to upload to Yes?")) {
+    const today = new Date().toISOString().slice(0, 10);
+    const qaDate = await askText("Final QA date", today);
+    const tester = await askText("Tester label, without private email", "Manual account QA completed with Codex-guided checks");
+    const browser = await askText("Browser label", "Chrome packaged extension manual test");
+    const testAccountLabel = await askText("Test account label, without private email", "Reader/fresh test accounts verified; no private email recorded");
+
     content = content
+      .replace(/^- Date: .*$/m, `- Date: ${qaDate}`)
+      .replace(/^- Tester: .*$/m, `- Tester: ${tester}`)
+      .replace(/^- Browser: .*$/m, `- Browser: ${browser}`)
+      .replace(/^- Test account email alias or label: .*$/m, `- Test account email alias or label: ${testAccountLabel}`)
+      .replace(/^- Google OAuth tested: .*$/m, `- Google OAuth tested: ${googleOAuthStatus}`)
       .replace(/^- Ready to upload: .*$/m, "- Ready to upload: Yes")
       .replace(/^- If No, blocking issues: .*$/m, "- If No, blocking issues: None.")
       .replace(/^- Chrome Web Store status: .*$/m, "- Chrome Web Store status: Ready to submit");
