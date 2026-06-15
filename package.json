@@ -5,6 +5,7 @@
   "description": "Local prototype for a paper comment browser extension.",
   "scripts": {
     "check": "node scripts/check.js",
+    "check:account-qa-finalizer": "node scripts/check-account-qa-finalizer.js",
     "check:extension-auth-gates": "node scripts/check-extension-auth-gates.js",
     "check:extension-demo-interactions": "node scripts/check-extension-demo-interactions.js",
     "check:google-oauth-setup": "node scripts/check-google-oauth-setup.js",

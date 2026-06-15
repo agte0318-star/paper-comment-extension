@@ -4,14 +4,20 @@ const readline = require("readline");
 
 const root = path.resolve(__dirname, "..");
 const version = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).version;
-const resultsPath = path.join(root, "release", "store-assets", version, "manual-test-results.md");
+const resultsPath = process.env.PCE_MANUAL_RESULTS_PATH || path.join(root, "release", "store-assets", version, "manual-test-results.md");
+const scriptedAnswers = process.stdin.isTTY ? null : fs.readFileSync(0, "utf8").split(/\r?\n/);
 
-const rl = readline.createInterface({
+const rl = scriptedAnswers ? null : readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
 function ask(question) {
+  if (scriptedAnswers) {
+    const answer = scriptedAnswers.shift() || "";
+    console.log(`${question} [y/N] ${answer}`);
+    return Promise.resolve(/^y(?:es)?$/i.test(answer.trim()));
+  }
   return new Promise((resolve) => {
     rl.question(`${question} [y/N] `, (answer) => {
       resolve(/^y(?:es)?$/i.test(answer.trim()));
@@ -103,5 +109,5 @@ main().catch((error) => {
   console.error(error.message);
   process.exitCode = 1;
 }).finally(() => {
-  rl.close();
+  rl?.close();
 });

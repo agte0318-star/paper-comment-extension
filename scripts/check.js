@@ -24,6 +24,7 @@ const requiredFiles = [
   "index.html",
   "privacy-policy.html",
   "support.html",
+  "scripts/check-account-qa-finalizer.js",
   "scripts/check-extension-auth-gates.js",
   "scripts/check-extension-demo-interactions.js",
   "scripts/check-google-oauth-setup.js",
