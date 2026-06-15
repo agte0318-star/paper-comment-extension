@@ -28,7 +28,8 @@
     "prepare:store-assets": "powershell -ExecutionPolicy Bypass -File scripts/prepare-store-assets.ps1",
     "qa:account": "powershell -ExecutionPolicy Bypass -File scripts/run-account-qa.ps1",
     "release:prepare": "powershell -ExecutionPolicy Bypass -File scripts/prepare-release.ps1",
-    "release:status": "node scripts/release-status.js"
+    "release:status": "node scripts/release-status.js",
+    "preflight:store": "powershell -ExecutionPolicy Bypass -File scripts/store-preflight.ps1"
   },
   "devDependencies": {}
 }

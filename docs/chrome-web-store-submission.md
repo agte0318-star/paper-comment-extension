@@ -76,7 +76,13 @@ Moderation actions are enforced by Supabase RLS and RPC functions. Admin-only ac
 
 ## Required Final Commands
 
-Run the current release-preparation pipeline first. It runs local checks, source-secret scanning, Google OAuth diagnostics, the account QA finalizer self-check, packaging, package validation, manual-test folder preparation, store-asset preparation, and release status:
+Run the current store preflight first. It handles release preparation, screenshots, public-page checks, extension interaction checks, popup checks, source-secret scanning, and release status:
+
+```powershell
+npm.cmd run preflight:store
+```
+
+If you need to debug one step at a time, run the expanded commands below. The release-preparation pipeline runs local checks, source-secret scanning, Google OAuth diagnostics, the account QA finalizer self-check, packaging, package validation, manual-test folder preparation, store-asset preparation, and release status:
 
 ```powershell
 npm.cmd run release:prepare
@@ -84,7 +90,7 @@ npm.cmd run release:prepare
 
 Then load `release/manual-test/paper-comment-extension-0.5.5` in `chrome://extensions` and complete `docs/release-qa-checklist.md`. For step-by-step Chinese instructions, use `docs/manual-test-guide-zh.md`.
 
-Refresh screenshots and public-page checks:
+Expanded screenshot and public-page checks:
 
 ```powershell
 npm.cmd run capture:web-screenshots
