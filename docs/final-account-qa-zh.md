@@ -24,7 +24,14 @@
 
 ## 只在当前 PowerShell 窗口设置密码
 
-在项目目录运行：
+推荐使用交互式辅助脚本。它会隐藏密码输入，运行完自动清理临时环境变量：
+
+```powershell
+cd E:\谷歌插件开发\paper-comment-extension
+npm.cmd run qa:account
+```
+
+如果你不想用交互式脚本，也可以手动在当前 PowerShell 窗口设置：
 
 ```powershell
 cd E:\谷歌插件开发\paper-comment-extension
@@ -44,6 +51,7 @@ $env:PCE_TEST_ADMIN_PASSWORD="admin-test-password"
 然后运行：
 
 ```powershell
+npm.cmd run check:google-oauth-setup
 npm.cmd run check:live-account-flow
 ```
 

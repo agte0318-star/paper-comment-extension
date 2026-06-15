@@ -26,7 +26,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the fi
 - Run `npm.cmd run check:popup-current-paper` to confirm the popup current-paper action builds correct fallback discussion URLs for PDF and PDF-viewer tabs.
 - Run `npm.cmd run check:popup-account-state` to confirm the popup displays a signed-in account state and local sign-out clears the saved session.
 - Run `npm.cmd run check:google-oauth-setup` to confirm Google OAuth code wiring and print the Supabase redirect URLs that must be allowed before manual Google sign-in testing.
-- When real test accounts are ready, follow `docs/final-account-qa-zh.md`, then run `npm.cmd run check:live-account-flow` with credentials set only in the current terminal to verify reader sign-in, password reset, optional sign-up, and optional admin role.
+- When real test accounts are ready, follow `docs/final-account-qa-zh.md`, then run `npm.cmd run qa:account` for a secure guided account-flow check; use `npm.cmd run check:live-account-flow` only if you prefer setting temporary environment variables manually.
 - Confirm `release/store-assets/<version>/reviewer-notes.md` exists for Chrome Web Store reviewer notes.
 - Open `release/store-assets/<version>/manual-test-links.html` as the central link page for manual QA.
 
@@ -55,6 +55,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the fi
 - Sign in again with the same email/password.
 - Request a password reset email.
 - Run `npm.cmd run check:popup-account-state` to verify popup signed-in display and local sign-out UI behavior without exposing real credentials.
+- Prefer `npm.cmd run qa:account` for the final guided account QA; it prompts for passwords securely, runs Google OAuth diagnostics and live account checks, then clears temporary environment variables.
 - Run `npm.cmd run check:live-account-flow` after setting `PCE_TEST_EMAIL` and `PCE_TEST_PASSWORD`; optionally set `PCE_TEST_NEW_EMAIL`, `PCE_TEST_NEW_PASSWORD`, `PCE_TEST_ADMIN_EMAIL`, and `PCE_TEST_ADMIN_PASSWORD`. Use the script's "Manual QA row guidance" output when updating `manual-test-results.md`; `Manual` rows still require a real browser or inbox check before marking Pass.
 - Run `npm.cmd run check:google-oauth-setup`, add the printed redirect URLs in Supabase if needed, then test Google sign-in in the extension and on the GitHub Pages profile page.
 - Test Google sign-in if Supabase and Google OAuth are configured.

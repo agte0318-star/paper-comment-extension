@@ -21,7 +21,7 @@ Current candidate version: `0.5.5`
    - Confirm the test emails if Supabase requires email confirmation.
    - Confirm one active admin account for admin-page testing.
    - Keep test passwords out of repo files, screenshots, and notes.
-   - Follow `docs/final-account-qa-zh.md`; set live-test credentials only in the current terminal, then run `npm.cmd run check:live-account-flow`.
+   - Follow `docs/final-account-qa-zh.md`; prefer `npm.cmd run qa:account` for guided account QA, or set live-test credentials only in the current terminal and run `npm.cmd run check:live-account-flow`.
 
 2. Packaged extension test
    - Load `release/manual-test/paper-comment-extension-0.5.5` through `chrome://extensions`.
@@ -33,6 +33,7 @@ Current candidate version: `0.5.5`
    - Run `npm.cmd run check:extension-auth-gates` to verify signed-out Rate, comment, Like, Reply, and Report actions open sign-in prompts.
    - Run `npm.cmd run check:popup-account-state` to verify popup signed-in state and local sign-out behavior.
    - Run `npm.cmd run check:google-oauth-setup` to confirm Google OAuth code wiring and print the Supabase redirect URLs that must be allowed.
+   - Run `npm.cmd run qa:account` for a guided account-flow check that prompts for passwords securely and clears temporary environment variables.
    - Run `npm.cmd run check:live-account-flow` after creating real test accounts to verify email/password sign-in, password reset, optional sign-up, and optional active-admin status; use its "Manual QA row guidance" output to update `manual-test-results.md`.
    - Signed-out rating, comment, like, reply, and report actions open the sign-in dialog.
    - Email/password sign-up works.
@@ -125,6 +126,7 @@ npm.cmd run check:extension-demo-interactions
 npm.cmd run check:popup-current-paper
 npm.cmd run check:popup-account-state
 npm.cmd run check:google-oauth-setup
+npm.cmd run qa:account
 npm.cmd run check:live-account-flow
 npm.cmd run check:source-secrets
 npm.cmd run release:status
