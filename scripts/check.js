@@ -28,6 +28,7 @@ const requiredFiles = [
   "scripts/check-extension-demo-interactions.js",
   "scripts/check-live-account-flow.js",
   "scripts/check-package.js",
+  "scripts/check-popup-account-state.js",
   "scripts/check-popup-current-paper.js",
   "scripts/check-public-urls.js",
   "scripts/check-public-web-render.js",

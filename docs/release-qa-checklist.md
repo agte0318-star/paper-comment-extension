@@ -23,6 +23,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Run `npm.cmd run check:extension-auth-gates` to confirm signed-out extension actions open the correct sign-in modal and comment sorting works in a real browser with privacy-safe demo data.
 - Run `npm.cmd run check:extension-demo-interactions` to confirm signed-in rating, comment, one-comment-per-day, like, reply, report, and share-image flows work in a real browser with privacy-safe demo data.
 - Run `npm.cmd run check:popup-current-paper` to confirm the popup current-paper action builds correct fallback discussion URLs for PDF and PDF-viewer tabs.
+- Run `npm.cmd run check:popup-account-state` to confirm the popup displays a signed-in account state and local sign-out clears the saved session.
 - When real test accounts are ready, run `npm.cmd run check:live-account-flow` with credentials set only in the current terminal to verify reader sign-in, password reset, optional sign-up, and optional admin role.
 - Confirm `release/store-assets/<version>/reviewer-notes.md` exists for Chrome Web Store reviewer notes.
 - Open `release/store-assets/<version>/manual-test-links.html` as the central link page for manual QA.
@@ -51,6 +52,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the pr
 - Sign out from the popup.
 - Sign in again with the same email/password.
 - Request a password reset email.
+- Run `npm.cmd run check:popup-account-state` to verify popup signed-in display and local sign-out UI behavior without exposing real credentials.
 - Run `npm.cmd run check:live-account-flow` after setting `PCE_TEST_EMAIL` and `PCE_TEST_PASSWORD`; optionally set `PCE_TEST_NEW_EMAIL`, `PCE_TEST_NEW_PASSWORD`, `PCE_TEST_ADMIN_EMAIL`, and `PCE_TEST_ADMIN_PASSWORD`.
 - Test Google sign-in if Supabase and Google OAuth are configured.
 - Confirm the popup shows the signed-in account and provider.

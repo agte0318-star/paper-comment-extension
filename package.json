@@ -9,6 +9,7 @@
     "check:extension-demo-interactions": "node scripts/check-extension-demo-interactions.js",
     "check:live-account-flow": "node scripts/check-live-account-flow.js",
     "check:package": "node scripts/check-package.js",
+    "check:popup-account-state": "node scripts/check-popup-account-state.js",
     "check:popup-current-paper": "node scripts/check-popup-current-paper.js",
     "check:public-urls": "node scripts/check-public-urls.js",
     "check:public-web-render": "node scripts/check-public-web-render.js",
