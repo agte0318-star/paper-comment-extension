@@ -2,6 +2,13 @@
 
 这份文件只用于 Chrome Web Store 上传前最后 5 个账号相关 Pending 项。不要把真实密码、邮箱验证码、收件箱截图、Supabase 私钥或 Chrome Web Store 凭证写进任何项目文件。
 
+开始账号 QA 前，建议先运行一次完整的非账号上传预检：
+
+```powershell
+cd E:\谷歌插件开发\paper-comment-extension
+npm.cmd run preflight:store
+```
+
 ## 还剩哪 5 项
 
 - `Email/password account creation works`

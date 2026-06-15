@@ -322,6 +322,7 @@ console.log(`Ready for Chrome Web Store upload: ${ready ? "YES" : "NO"}`);
 if (!ready) {
   console.log("");
   console.log("Next actions:");
+  console.log("  - Run npm.cmd run preflight:store to refresh the package, screenshots, public-page checks, extension interaction checks, popup checks, source-secret scan, and this status report.");
   if (!packageSummary.valid) console.log("  - Run npm.cmd run package.");
   if (packageJson.version !== version) console.log("  - Make package.json and manifest.json versions match.");
   if (packageSummary.packagedVersion && packageSummary.packagedVersion !== version) console.log("  - Run npm.cmd run package to rebuild the zip for the current manifest version.");
@@ -339,6 +340,8 @@ if (!ready) {
     if (accountSection?.pending) {
       console.log("  - Run npm.cmd run qa:account for the guided real-account check.");
       console.log("  - Run npm.cmd run finalize:account-qa after each account item is truly verified.");
+      console.log("  - Use a fresh test email for account creation and inbox confirmation; use an existing reader test account for sign-in and password reset.");
+      console.log("  - If Google OAuth is not configured for this release, record that in finalize:account-qa instead of marking a real Google login as tested.");
       console.log("  - Re-run npm.cmd run release:status, then npm.cmd run check:release-ready.");
     }
   }

@@ -132,7 +132,11 @@ try {
   Invoke-NpmScript "check:live-account-flow"
 
   Write-Host ""
-  Write-Host "Account QA helper finished. Use the Manual QA row guidance above to update release/store-assets/0.5.5/manual-test-results.md."
+  Write-Host "Account QA helper finished. Use the Manual QA row guidance above, then run:"
+  Write-Host "  npm.cmd run finalize:account-qa"
+  Write-Host "  npm.cmd run release:status"
+  Write-Host "  npm.cmd run check:release-ready"
+  Write-Host "Only answer yes in finalize:account-qa for checks you truly completed in this run or verified manually."
 } finally {
   Clear-PceAccountEnv
   Pop-Location

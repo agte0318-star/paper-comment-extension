@@ -172,6 +172,8 @@ const contentScript = fs.readFileSync(path.join(root, "src/content/index.js"), "
 const cloudClient = fs.readFileSync(path.join(root, "src/cloud/supabaseClient.js"), "utf8");
 const backgroundAuth = fs.readFileSync(path.join(root, "src/background/auth.js"), "utf8");
 const popupScript = fs.readFileSync(path.join(root, "src/popup/popup.js"), "utf8");
+const accountQaHelper = fs.readFileSync(path.join(root, "scripts/run-account-qa.ps1"), "utf8");
+const releaseStatusScript = fs.readFileSync(path.join(root, "scripts/release-status.js"), "utf8");
 const runtimeSources = [
   { name: "content script", source: contentScript },
   { name: "cloud client", source: cloudClient },
@@ -313,6 +315,22 @@ const requiredChromeStoreSubmissionSnippets = [
 for (const snippet of requiredChromeStoreSubmissionSnippets) {
   if (!chromeStoreSubmission.includes(snippet.value)) {
     console.error(`Chrome Web Store submission doc is missing: ${snippet.name}`);
+    hasError = true;
+  }
+}
+
+const requiredReleaseHandoffSnippets = [
+  { name: "account QA helper recommends finalizer", source: accountQaHelper, value: "npm.cmd run finalize:account-qa" },
+  { name: "account QA helper recommends release status", source: accountQaHelper, value: "npm.cmd run release:status" },
+  { name: "account QA helper recommends release gate", source: accountQaHelper, value: "npm.cmd run check:release-ready" },
+  { name: "release status recommends store preflight", source: releaseStatusScript, value: "npm.cmd run preflight:store" },
+  { name: "release status explains fresh test email", source: releaseStatusScript, value: "Use a fresh test email for account creation and inbox confirmation" },
+  { name: "release status explains Google OAuth not configured path", source: releaseStatusScript, value: "If Google OAuth is not configured for this release" }
+];
+
+for (const snippet of requiredReleaseHandoffSnippets) {
+  if (!snippet.source.includes(snippet.value)) {
+    console.error(`Missing release handoff guidance: ${snippet.name}`);
     hasError = true;
   }
 }
