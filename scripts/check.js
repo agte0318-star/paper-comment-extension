@@ -26,6 +26,7 @@ const requiredFiles = [
   "support.html",
   "scripts/check-extension-auth-gates.js",
   "scripts/check-extension-demo-interactions.js",
+  "scripts/check-google-oauth-setup.js",
   "scripts/check-live-account-flow.js",
   "scripts/check-package.js",
   "scripts/check-popup-account-state.js",

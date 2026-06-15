@@ -32,6 +32,7 @@ Current candidate version: `0.5.5`
 3. Account flow
    - Run `npm.cmd run check:extension-auth-gates` to verify signed-out Rate, comment, Like, Reply, and Report actions open sign-in prompts.
    - Run `npm.cmd run check:popup-account-state` to verify popup signed-in state and local sign-out behavior.
+   - Run `npm.cmd run check:google-oauth-setup` to confirm Google OAuth code wiring and print the Supabase redirect URLs that must be allowed.
    - Run `npm.cmd run check:live-account-flow` after creating real test accounts to verify email/password sign-in, password reset, optional sign-up, and optional active-admin status; use its "Manual QA row guidance" output to update `manual-test-results.md`.
    - Signed-out rating, comment, like, reply, and report actions open the sign-in dialog.
    - Email/password sign-up works.
@@ -123,6 +124,7 @@ npm.cmd run check:extension-auth-gates
 npm.cmd run check:extension-demo-interactions
 npm.cmd run check:popup-current-paper
 npm.cmd run check:popup-account-state
+npm.cmd run check:google-oauth-setup
 npm.cmd run check:live-account-flow
 npm.cmd run check:source-secrets
 npm.cmd run release:status

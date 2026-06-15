@@ -69,12 +69,33 @@ E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.5\manual-
 
 Google 登录只能在浏览器里真实点一次验证。步骤：
 
+先运行配置诊断：
+
+```powershell
+npm.cmd run check:google-oauth-setup
+```
+
+如果你已经知道 Chrome Web Store 里的扩展 ID，可以这样打印准确的 Supabase redirect URL：
+
+```powershell
+$env:PCE_EXTENSION_ID="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+npm.cmd run check:google-oauth-setup
+```
+
+然后到 Supabase Authentication 的 URL Configuration / Redirect URLs 里确认至少允许：
+
+- `https://agte0318-star.github.io/paper-comment-extension/web/profile.html`
+- `https://<你的 Chrome 扩展 ID>.chromiumapp.org/supabase`
+
+真实浏览器验证步骤：
+
 1. 加载打包后的扩展目录：`release/manual-test/paper-comment-extension-0.5.5`
 2. 打开一篇支持的论文页面。
 3. 点击 `Sign in`。
 4. 点击 `Continue with Google`。
 5. 完成 Google 登录。
 6. 回到扩展后确认用户显示为 Google 账号，并且可以评分或评论。
+7. 打开 `https://agte0318-star.github.io/paper-comment-extension/web/profile.html`，点击 `Continue with Google`，确认能回到已登录的 Profile 页面。
 
 如果 Supabase 没有配置 Google OAuth，就不要标记 `Google sign-in works if configured` 为 Pass；在备注里写 `Google OAuth not configured for this release`。
 
