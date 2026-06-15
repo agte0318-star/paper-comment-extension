@@ -20,6 +20,7 @@
     "capture:extension-screenshots": "node scripts/capture-extension-screenshots.js",
     "capture:demo-screenshots": "node scripts/capture-demo-interaction-screenshots.js",
     "capture:web-screenshots": "powershell -ExecutionPolicy Bypass -File scripts/capture-web-screenshots.ps1",
+    "finalize:account-qa": "node scripts/finalize-account-qa.js",
     "icons": "powershell -ExecutionPolicy Bypass -File scripts/generate-icons.ps1",
     "package": "powershell -ExecutionPolicy Bypass -File scripts/package-extension.ps1",
     "prepare:manual-test": "powershell -ExecutionPolicy Bypass -File scripts/prepare-manual-test.ps1",

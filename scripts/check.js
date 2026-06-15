@@ -39,6 +39,7 @@ const requiredFiles = [
   "scripts/capture-demo-interaction-screenshots.js",
   "scripts/capture-extension-screenshots.js",
   "scripts/capture-web-screenshots.ps1",
+  "scripts/finalize-account-qa.js",
   "scripts/prepare-manual-test.ps1",
   "scripts/prepare-release.ps1",
   "scripts/prepare-store-assets.ps1",

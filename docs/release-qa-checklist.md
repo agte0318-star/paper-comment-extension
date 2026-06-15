@@ -57,6 +57,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the fi
 - Run `npm.cmd run check:popup-account-state` to verify popup signed-in display and local sign-out UI behavior without exposing real credentials.
 - Prefer `npm.cmd run qa:account` for the final guided account QA; it prompts for passwords securely, runs Google OAuth diagnostics and live account checks, then clears temporary environment variables.
 - Run `npm.cmd run check:live-account-flow` after setting `PCE_TEST_EMAIL` and `PCE_TEST_PASSWORD`; optionally set `PCE_TEST_NEW_EMAIL`, `PCE_TEST_NEW_PASSWORD`, `PCE_TEST_ADMIN_EMAIL`, and `PCE_TEST_ADMIN_PASSWORD`. Use the script's "Manual QA row guidance" output when updating `manual-test-results.md`; `Manual` rows still require a real browser or inbox check before marking Pass.
+- Run `npm.cmd run finalize:account-qa` after real account checks are complete to update only the confirmed account QA rows in `manual-test-results.md`.
 - Run `npm.cmd run check:google-oauth-setup`, add the printed redirect URLs in Supabase if needed, then test Google sign-in in the extension and on the GitHub Pages profile page.
 - Test Google sign-in if Supabase and Google OAuth are configured.
 - Confirm the popup shows the signed-in account and provider.

@@ -75,6 +75,14 @@ E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.5\manual-
 
 只把脚本明确显示 `Pass` 的行改成 `Pass`。如果脚本显示 `Manual`，说明代码接线或请求已验证，但仍需要你在浏览器或邮箱里真实确认后才能改成 `Pass`。不要为了清空 Pending 而手动猜测。
 
+推荐用交互式 finalizer 更新这 5 行，避免手动改错：
+
+```powershell
+npm.cmd run finalize:account-qa
+```
+
+它只会更新你逐项回答 `yes` 的账号 QA 行；如果还有任何 `Pending`，不会把 `Ready to upload` 改成 `Yes`。
+
 Google 登录只能在浏览器里真实点一次验证。步骤：
 
 先运行配置诊断：
