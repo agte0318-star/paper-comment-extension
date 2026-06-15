@@ -6,7 +6,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the fi
 
 ## 1. Build And Package
 
-- Run `npm.cmd run release:prepare` to run local checks, rebuild the zip, prepare the manual-test folder, prepare store assets, and print release status in one pass.
+- Run `npm.cmd run release:prepare` to run local checks, source-secret scan, Google OAuth diagnostics, account-finalizer self-check, rebuild the zip, prepare the manual-test folder, prepare store assets, and print release status in one pass.
 - Run `npm.cmd run check`.
 - Run `npm.cmd run package`.
 - Confirm the package path is `release/paper-comment-extension-<version>.zip`.

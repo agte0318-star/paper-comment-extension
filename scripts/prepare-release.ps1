@@ -19,6 +19,18 @@ try {
     npm.cmd run check
   }
 
+  Run-Step "Source secret scan" {
+    npm.cmd run check:source-secrets
+  }
+
+  Run-Step "Google OAuth setup diagnostics" {
+    npm.cmd run check:google-oauth-setup
+  }
+
+  Run-Step "Account QA finalizer self-check" {
+    npm.cmd run check:account-qa-finalizer
+  }
+
   Run-Step "Build release package" {
     npm.cmd run package
   }

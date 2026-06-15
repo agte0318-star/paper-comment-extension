@@ -127,6 +127,7 @@ npm.cmd run check:extension-demo-interactions
 npm.cmd run check:popup-current-paper
 npm.cmd run check:popup-account-state
 npm.cmd run check:google-oauth-setup
+npm.cmd run check:account-qa-finalizer
 npm.cmd run qa:account
 npm.cmd run finalize:account-qa
 npm.cmd run check:live-account-flow
