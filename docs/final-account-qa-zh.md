@@ -65,7 +65,7 @@ npm.cmd run check:live-account-flow
 E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.5\manual-test-results.md
 ```
 
-只把脚本明确显示 `Pass` 的行改成 `Pass`。不要为了清空 Pending 而手动猜测。
+只把脚本明确显示 `Pass` 的行改成 `Pass`。如果脚本显示 `Manual`，说明代码接线或请求已验证，但仍需要你在浏览器或邮箱里真实确认后才能改成 `Pass`。不要为了清空 Pending 而手动猜测。
 
 Google 登录只能在浏览器里真实点一次验证。步骤：
 

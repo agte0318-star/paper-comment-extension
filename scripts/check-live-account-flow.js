@@ -184,8 +184,8 @@ async function checkNewAccountIfProvided() {
     );
     recordQa(
       "Email confirmation flow is understandable",
-      "Pass",
-      "Supabase required confirmation; verify the inbox confirmation link text is understandable before marking this row Pass."
+      "Manual",
+      "Supabase required confirmation. Mark Pass only after the test inbox receives a clear confirmation email and the confirmation link allows sign-in."
     );
   }
   return payload;

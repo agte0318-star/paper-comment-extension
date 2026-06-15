@@ -54,7 +54,7 @@ For a step-by-step Chinese guide, use `docs/manual-test-guide-zh.md`. For the fi
 - Sign in again with the same email/password.
 - Request a password reset email.
 - Run `npm.cmd run check:popup-account-state` to verify popup signed-in display and local sign-out UI behavior without exposing real credentials.
-- Run `npm.cmd run check:live-account-flow` after setting `PCE_TEST_EMAIL` and `PCE_TEST_PASSWORD`; optionally set `PCE_TEST_NEW_EMAIL`, `PCE_TEST_NEW_PASSWORD`, `PCE_TEST_ADMIN_EMAIL`, and `PCE_TEST_ADMIN_PASSWORD`. Use the script's "Manual QA row guidance" output when updating `manual-test-results.md`.
+- Run `npm.cmd run check:live-account-flow` after setting `PCE_TEST_EMAIL` and `PCE_TEST_PASSWORD`; optionally set `PCE_TEST_NEW_EMAIL`, `PCE_TEST_NEW_PASSWORD`, `PCE_TEST_ADMIN_EMAIL`, and `PCE_TEST_ADMIN_PASSWORD`. Use the script's "Manual QA row guidance" output when updating `manual-test-results.md`; `Manual` rows still require a real browser or inbox check before marking Pass.
 - Test Google sign-in if Supabase and Google OAuth are configured.
 - Confirm the popup shows the signed-in account and provider.
 - Confirm the profile page opens and shows only the signed-in user's activity.
