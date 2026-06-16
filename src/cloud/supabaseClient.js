@@ -175,6 +175,10 @@
     return authRequest("/auth/v1/recover", { email });
   }
 
+  async function resendConfirmationEmail(email) {
+    return authRequest("/auth/v1/resend", { type: "signup", email });
+  }
+
   async function signInWithGoogle() {
     const response = await chrome.runtime.sendMessage({ type: "PCE_SIGN_IN_WITH_GOOGLE" });
     if (!response?.ok) {
@@ -434,6 +438,7 @@
     signIn,
     signInWithGoogle,
     sendPasswordReset,
+    resendConfirmationEmail,
     signOut,
     listComments,
     addComment,

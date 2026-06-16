@@ -269,8 +269,36 @@ Set-Content -LiteralPath $linksPath -Value $links -Encoding UTF8
 Set-Content -LiteralPath $reviewerNotesPath -Value $reviewerNotes -Encoding UTF8
 Set-Content -LiteralPath $manualLinksPath -Value $manualLinks -Encoding UTF8
 Set-Content -LiteralPath $screenshotGuidePath -Value $screenshotGuide -Encoding UTF8
-if (-not (Test-Path $manualResultsPath)) {
-  Copy-Item -LiteralPath $manualResultsTemplate -Destination $manualResultsPath
+$shouldSeedManualResults = -not (Test-Path $manualResultsPath)
+if (-not $shouldSeedManualResults) {
+  $existingManualResults = Get-Content -Raw -LiteralPath $manualResultsPath
+  $isTemplateManualResults = $existingManualResults.Contains('Copy this file into `release/store-assets/<version>/manual-test-results.md`')
+  $hasPassedRows = $existingManualResults -match '\|\s*Pass\s*\|'
+  $shouldSeedManualResults = $isTemplateManualResults -and (-not $hasPassedRows)
+}
+
+if ($shouldSeedManualResults) {
+  $previousManualResults = Get-ChildItem -LiteralPath (Join-Path $root "release\store-assets") -Directory -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -ne $version -and (Test-Path (Join-Path $_.FullName "manual-test-results.md")) } |
+    Sort-Object Name -Descending |
+    Select-Object -First 1
+
+  if ($previousManualResults) {
+    $previousVersion = $previousManualResults.Name
+    $previousPath = Join-Path $previousManualResults.FullName "manual-test-results.md"
+    $manualResults = Get-Content -Raw -LiteralPath $previousPath
+    $manualResults = $manualResults.Replace($previousVersion, $version)
+    $manualResults = $manualResults.Replace("release/store-assets/$previousVersion", "release/store-assets/$version")
+    $manualResults = $manualResults.Replace("release\store-assets\$previousVersion", "release\store-assets\$version")
+    $manualResults = $manualResults -replace "^- Date: .*$", "- Date: $(Get-Date -Format yyyy-MM-dd)"
+    $manualResults = $manualResults -replace "^- Submitted version: .*$", "- Submitted version: $version planned"
+    $manualResults = $manualResults -replace "^- Submission date: .*$", "- Submission date: Not submitted"
+    $manualResults = $manualResults -replace "^- Chrome Web Store status: .*$", "- Chrome Web Store status: Not submitted"
+    $manualResults = $manualResults -replace "^- Ready to upload: .*$", "- Ready to upload: No"
+    Set-Content -LiteralPath $manualResultsPath -Value $manualResults -Encoding UTF8
+  } else {
+    Copy-Item -LiteralPath $manualResultsTemplate -Destination $manualResultsPath
+  }
 }
 
 Write-Host "Prepared Chrome Web Store asset folder:"

@@ -509,6 +509,11 @@
       text: "Forgot password?",
       attrs: { type: "button", ...(state.authLoading ? { disabled: "disabled" } : {}) }
     });
+    const resendConfirmation = createElement("button", {
+      className: "pce-auth-link",
+      text: "Resend confirmation email",
+      attrs: { type: "button", ...(state.authLoading ? { disabled: "disabled" } : {}) }
+    });
 
     async function runAuth(mode) {
       const emailValue = email.value.trim();
@@ -625,6 +630,30 @@
       }
     }
 
+    async function runConfirmationResend() {
+      const emailValue = email.value.trim();
+      if (!emailValue || !email.validity.valid) {
+        state.authMessage = "Enter your email first.";
+        render();
+        return;
+      }
+      state.authEmail = emailValue;
+      state.authLoading = true;
+      state.authMessage = "Sending confirmation email...";
+      render();
+
+      try {
+        await getDataStore().resendConfirmationEmail(emailValue);
+        state.authLoading = false;
+        state.authMessage = "Confirmation email sent. Check your inbox and spam folder.";
+        render();
+      } catch (error) {
+        state.authLoading = false;
+        state.authMessage = error.message;
+        render();
+      }
+    }
+
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       runAuth(state.authMode);
@@ -635,9 +664,10 @@
       render();
     });
     forgotPassword.addEventListener("click", runPasswordReset);
+    resendConfirmation.addEventListener("click", runConfirmationResend);
     googleButton.addEventListener("click", runGoogleAuth);
 
-    form.append(googleButton, createElement("div", { className: "pce-auth-divider", text: "or use email" }), email, password, actions, forgotPassword, message);
+    form.append(googleButton, createElement("div", { className: "pce-auth-divider", text: "or use email" }), email, password, actions, forgotPassword, resendConfirmation, message);
     dialog.append(header, form);
     overlay.appendChild(dialog);
     overlay.addEventListener("click", (event) => {

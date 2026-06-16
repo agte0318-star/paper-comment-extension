@@ -1,11 +1,11 @@
 # Chrome Web Store Submission Notes
 
-Use this file when filling Chrome Web Store fields for version `0.5.5`. Keep submission screenshots and notes under `release/store-assets/0.5.5/`.
+Use this file when filling Chrome Web Store fields for version `0.5.6`. Keep submission screenshots and notes under `release/store-assets/0.5.6/`.
 
 ## Package
 
-- Upload package: `release/paper-comment-extension-0.5.5.zip`
-- Manual-test folder: `release/manual-test/paper-comment-extension-0.5.5`
+- Upload package: `release/paper-comment-extension-0.5.6.zip`
+- Manual-test folder: `release/manual-test/paper-comment-extension-0.5.6`
 - Website URL: `https://agte0318-star.github.io/paper-comment-extension/`
 - Support URL: `https://agte0318-star.github.io/paper-comment-extension/support.html`
 - Privacy Policy URL: `https://agte0318-star.github.io/paper-comment-extension/privacy-policy.html`
@@ -70,7 +70,7 @@ This extension is a cloud beta for scholarly discussion. It does not store artic
 
 The `activeTab` permission is only used when the user explicitly opens the popup and clicks the current-paper discussion action. The extension does not monitor all tabs or read browsing history.
 
-The `identity` permission is only used for Supabase Google OAuth sign-in. Email/password sign-in is also available through Supabase Auth.
+The `identity` permission is only used for Supabase Google OAuth sign-in. Email/password sign-in is also available through Supabase Auth. Users can request a new email confirmation message from the extension sign-in dialog or the web profile page if the first confirmation email does not arrive.
 
 Moderation actions are enforced by Supabase RLS and RPC functions. Admin-only actions are not protected only by hidden front-end UI.
 
@@ -88,7 +88,7 @@ If you need to debug one step at a time, run the expanded commands below. The re
 npm.cmd run release:prepare
 ```
 
-Then load `release/manual-test/paper-comment-extension-0.5.5` in `chrome://extensions` and complete `docs/release-qa-checklist.md`. For step-by-step Chinese instructions, use `docs/manual-test-guide-zh.md`.
+Then load `release/manual-test/paper-comment-extension-0.5.6` in `chrome://extensions` and complete `docs/release-qa-checklist.md`. For step-by-step Chinese instructions, use `docs/manual-test-guide-zh.md`.
 
 Expanded screenshot and public-page checks:
 
@@ -120,18 +120,18 @@ npm.cmd run release:status
 npm.cmd run check:release-ready
 ```
 
-Only upload `release/paper-comment-extension-0.5.5.zip` if `check:release-ready` passes.
+Only upload `release/paper-comment-extension-0.5.6.zip` if `check:release-ready` passes.
 
 ## Chrome Web Store Fields To Fill
 
-- Package: `release/paper-comment-extension-0.5.5.zip`
+- Package: `release/paper-comment-extension-0.5.6.zip`
 - Store listing text: copy from `docs/store-listing.md`.
 - Website URL: `https://agte0318-star.github.io/paper-comment-extension/`
 - Support URL: `https://agte0318-star.github.io/paper-comment-extension/support.html`
 - Privacy Policy URL: `https://agte0318-star.github.io/paper-comment-extension/privacy-policy.html`
-- Reviewer notes: copy from `release/store-assets/0.5.5/reviewer-notes.md`.
-- Screenshots folder: `release/store-assets/0.5.5/screenshots/`
-- Manual QA record for your archive: `release/store-assets/0.5.5/manual-test-results.md`
+- Reviewer notes: copy from `release/store-assets/0.5.6/reviewer-notes.md`.
+- Screenshots folder: `release/store-assets/0.5.6/screenshots/`
+- Manual QA record for your archive: `release/store-assets/0.5.6/manual-test-results.md`
 
 Recommended first visibility: `Unlisted`, then switch broader only after the store-installed extension is tested.
 
@@ -141,7 +141,7 @@ Recommended first visibility: `Unlisted`, then switch broader only after the sto
 - Email/password sign-up, sign-in, sign-out, session refresh, and password reset have been tested.
 - Google sign-in has been tested if OAuth is enabled.
 - arXiv, Wiley or Springer, ACS or ScienceDirect, and direct PDF fallback behavior have been tested.
-- Final screenshots have been saved under `release/store-assets/0.5.5/screenshots/`.
-- Manual test results have been recorded in `release/store-assets/0.5.5/manual-test-results.md`.
+- Final screenshots have been saved under `release/store-assets/0.5.6/screenshots/`.
+- Manual test results have been recorded in `release/store-assets/0.5.6/manual-test-results.md`.
 - `npm.cmd run check:release-ready` passes.
 - No screenshot exposes private email, passwords, Supabase dashboard secrets, Chrome Web Store credentials, paywalled article text, figures, or tables.

@@ -54,7 +54,7 @@ function createHarness(initialStorage = {}) {
   const chrome = {
     runtime: {
       lastError: null,
-      getManifest: () => ({ version: "0.5.5" })
+      getManifest: () => ({ version: "0.5.6" })
     },
     storage: {
       local: {
@@ -128,7 +128,7 @@ async function main() {
   await flush();
 
   const get = (selector) => harness.elements.get(selector);
-  assert(get("[data-version]").textContent === "Version 0.5.5", "Popup did not render manifest version.");
+  assert(get("[data-version]").textContent === "Version 0.5.6", "Popup did not render manifest version.");
   assert(get("[data-status-title]").textContent === "Launch Reader", "Popup did not show signed-in display name.");
   assert(get("[data-status-detail]").textContent.includes("synced"), "Popup did not show signed-in sync detail.");
   assert(get("[data-account-meta]").hidden === false, "Popup did not reveal account metadata.");

@@ -143,7 +143,7 @@ function getManualSummary() {
 }
 
 function getMetadataValue(source, label) {
-  const pattern = new RegExp(`^- ${label}:\\s*(.+)$`, "im");
+  const pattern = new RegExp(`^- ${label}:[ \\t]*(.*)$`, "im");
   const match = source.match(pattern);
   return match ? match[1].trim() : "";
 }

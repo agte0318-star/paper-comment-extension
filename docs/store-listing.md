@@ -21,6 +21,7 @@ Key features:
 - Supports Google sign-in and email/password sign-in through Supabase Auth.
 - Supports email/password account creation from the extension and profile page.
 - Shows clear email confirmation guidance when Supabase requires new users to confirm their email before signing in.
+- Lets users resend the email confirmation message if the first confirmation email does not arrive.
 - Supports password reset emails for email/password accounts.
 - Adds a popup with profile, trending, privacy, and reset-position shortcuts.
 - Adds a popup shortcut to open the discussion page for the current article or PDF tab when the sidebar cannot appear.

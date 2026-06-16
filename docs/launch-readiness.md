@@ -2,13 +2,13 @@
 
 This checklist tracks the remaining work required before uploading a production-ready Chrome Web Store package.
 
-Current candidate version: `0.5.5`
+Current candidate version: `0.5.6`
 
 ## Current Status
 
-- Release package: `release/paper-comment-extension-0.5.5.zip`
-- Packaged manual-test folder: `release/manual-test/paper-comment-extension-0.5.5`
-- Store assets folder: `release/store-assets/0.5.5`
+- Release package: `release/paper-comment-extension-0.5.6.zip`
+- Packaged manual-test folder: `release/manual-test/paper-comment-extension-0.5.6`
+- Store assets folder: `release/store-assets/0.5.6`
 - Screenshots: `11/11` valid
 - Manual QA: pending
 - Upload gate: `npm.cmd run check:release-ready`
@@ -24,8 +24,8 @@ Current candidate version: `0.5.5`
    - Follow `docs/final-account-qa-zh.md`; prefer `npm.cmd run qa:account` for guided account QA, or set live-test credentials only in the current terminal and run `npm.cmd run check:live-account-flow`.
 
 2. Packaged extension test
-   - Load `release/manual-test/paper-comment-extension-0.5.5` through `chrome://extensions`.
-   - Confirm Chrome shows version `0.5.5`.
+   - Load `release/manual-test/paper-comment-extension-0.5.6` through `chrome://extensions`.
+   - Confirm Chrome shows version `0.5.6`.
    - Pin the extension.
    - Confirm this is the packaged folder, not the source folder.
 
@@ -106,7 +106,7 @@ Current candidate version: `0.5.5`
    - No paywalled article text, figures, or tables as the screenshot focus.
 
 10. Manual test results
-    - Complete `release/store-assets/0.5.5/manual-test-results.md`.
+    - Complete `release/store-assets/0.5.6/manual-test-results.md`.
     - No `Pending` table items.
     - No `Fail` table items.
     - Set `Ready to upload: Yes`.
@@ -154,7 +154,7 @@ Never commit, paste, or screenshot the real passwords.
 
 ## After Upload
 
-- Record submitted version `0.5.5`.
+- Record submitted version `0.5.6`.
 - Record the submission date.
 - Keep the submitted zip and screenshots under `release/`.
 - Watch Chrome Web Store review status.

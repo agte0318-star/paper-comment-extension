@@ -55,8 +55,16 @@ foreach ($target in $targets) {
   )
 
   & $edgePath @arguments
-  $outputExists = Test-Path $outputPath
-  $outputSize = if ($outputExists) { (Get-Item $outputPath).Length } else { 0 }
+  $outputSize = 0
+  for ($attempt = 0; $attempt -lt 20; $attempt += 1) {
+    if (Test-Path $outputPath) {
+      $outputSize = (Get-Item $outputPath).Length
+      if ($outputSize -ge 1024) {
+        break
+      }
+    }
+    Start-Sleep -Milliseconds 250
+  }
   if ($LASTEXITCODE -ne 0 -and $outputSize -lt 1024) {
     throw "Failed to capture $($target.Name)."
   }

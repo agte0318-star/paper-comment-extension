@@ -47,7 +47,7 @@ function createPopupHarness(tab) {
   const chrome = {
     runtime: {
       lastError: null,
-      getManifest: () => ({ version: "0.5.5" })
+      getManifest: () => ({ version: "0.5.6" })
     },
     storage: {
       local: {

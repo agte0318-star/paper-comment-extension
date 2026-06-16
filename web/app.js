@@ -320,6 +320,10 @@ async function sendPasswordResetEmail(email) {
   return authPost("/auth/v1/recover", { email });
 }
 
+async function resendProfileConfirmationEmail(email) {
+  return authPost("/auth/v1/resend", { type: "signup", email });
+}
+
 function startProfileGoogleSignIn() {
   const authUrl = new URL(`${SUPABASE_URL}/auth/v1/authorize`);
   authUrl.searchParams.set("provider", "google");
@@ -989,6 +993,7 @@ function renderProfileAuth(message = "") {
       <div class="auth-link-row">
         <button class="link-button" type="button" data-profile-auth-toggle>${isSignUpMode ? "Back to sign in" : "Create account"}</button>
         <button class="link-button" type="button" data-profile-password-reset>Forgot password?</button>
+        <button class="link-button" type="button" data-profile-resend-confirmation>Resend confirmation email</button>
       </div>
       ${message ? `<div class="auth-message">${escapeHtml(message)}</div>` : ""}
     </div>
@@ -1045,6 +1050,22 @@ function renderProfileAuth(message = "") {
     try {
       await sendPasswordResetEmail(email);
       renderProfileAuth("Password reset email sent. Check your inbox and spam folder.");
+    } catch (error) {
+      renderProfileAuth(error.message);
+    }
+  });
+
+  auth.querySelector("[data-profile-resend-confirmation]").addEventListener("click", async () => {
+    const email = loginForm.elements.email.value.trim();
+    if (!email) {
+      renderProfileAuth("Enter your email first.");
+      return;
+    }
+    profileAuthEmail = email;
+    renderProfileAuth("Sending confirmation email...");
+    try {
+      await resendProfileConfirmationEmail(email);
+      renderProfileAuth("Confirmation email sent. Check your inbox and spam folder.");
     } catch (error) {
       renderProfileAuth(error.message);
     }

@@ -1,6 +1,6 @@
 {
   "name": "paper-comment-extension",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "private": true,
   "description": "Local prototype for a paper comment browser extension.",
   "scripts": {

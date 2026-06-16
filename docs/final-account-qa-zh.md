@@ -77,7 +77,7 @@ npm.cmd run check:live-account-flow
 更新：
 
 ```text
-E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.5\manual-test-results.md
+E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.6\manual-test-results.md
 ```
 
 只把脚本明确显示 `Pass` 的行改成 `Pass`。如果脚本显示 `Manual`，说明代码接线或请求已验证，但仍需要你在浏览器或邮箱里真实确认后才能改成 `Pass`。不要为了清空 Pending 而手动猜测。
@@ -114,7 +114,7 @@ npm.cmd run check:google-oauth-setup
 
 真实浏览器验证步骤：
 
-1. 加载打包后的扩展目录：`release/manual-test/paper-comment-extension-0.5.5`
+1. 加载打包后的扩展目录：`release/manual-test/paper-comment-extension-0.5.6`
 2. 打开一篇支持的论文页面。
 3. 点击 `Sign in`。
 4. 点击 `Continue with Google`。

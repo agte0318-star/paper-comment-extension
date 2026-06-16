@@ -27,10 +27,6 @@ try {
     npm.cmd run check:google-oauth-setup
   }
 
-  Run-Step "Account QA finalizer self-check" {
-    npm.cmd run check:account-qa-finalizer
-  }
-
   Run-Step "Build release package" {
     npm.cmd run package
   }
@@ -45,6 +41,10 @@ try {
 
   Run-Step "Prepare Chrome Web Store assets folder" {
     npm.cmd run prepare:store-assets
+  }
+
+  Run-Step "Account QA finalizer self-check" {
+    npm.cmd run check:account-qa-finalizer
   }
 
   Run-Step "Release status" {

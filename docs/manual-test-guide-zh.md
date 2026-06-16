@@ -18,16 +18,16 @@ npm.cmd run release:prepare
 
 ```text
 Chrome 加载目录:
-E:\谷歌插件开发\paper-comment-extension\release\manual-test\paper-comment-extension-0.5.5
+E:\谷歌插件开发\paper-comment-extension\release\manual-test\paper-comment-extension-0.5.6
 
 截图目录:
-E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.5\screenshots
+E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.6\screenshots
 
 测试结果:
-E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.5\manual-test-results.md
+E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.6\manual-test-results.md
 
 上传 zip:
-E:\谷歌插件开发\paper-comment-extension\release\paper-comment-extension-0.5.5.zip
+E:\谷歌插件开发\paper-comment-extension\release\paper-comment-extension-0.5.6.zip
 ```
 
 查看剩余缺口：
@@ -72,10 +72,10 @@ npm.cmd run capture:extension-screenshots
 6. 选择：
 
 ```text
-E:\谷歌插件开发\paper-comment-extension\release\manual-test\paper-comment-extension-0.5.5
+E:\谷歌插件开发\paper-comment-extension\release\manual-test\paper-comment-extension-0.5.6
 ```
 
-7. 确认 Chrome 显示版本 `0.5.5`。
+7. 确认 Chrome 显示版本 `0.5.6`。
 8. 把扩展固定到浏览器工具栏。
 
 ## 4. 手动测试登录流程
@@ -176,7 +176,7 @@ https://agte0318-star.github.io/paper-comment-extension/web/admin.html
 截图保存到：
 
 ```text
-E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.5\screenshots
+E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.6\screenshots
 ```
 
 截图必须是 PNG，尺寸为 `1280x800` 或 `640x400`。
@@ -211,7 +211,7 @@ E:\谷歌插件开发\paper-comment-extension\release\store-assets\0.5.5\screens
 
 ```text
 Ready to upload: Yes
-Submitted version: 0.5.5 planned
+Submitted version: 0.5.6 planned
 Chrome Web Store status: Ready to submit
 ```
 
@@ -224,5 +224,5 @@ npm.cmd run check:release-ready
 只有这个命令通过后，才上传：
 
 ```text
-E:\谷歌插件开发\paper-comment-extension\release\paper-comment-extension-0.5.5.zip
+E:\谷歌插件开发\paper-comment-extension\release\paper-comment-extension-0.5.6.zip
 ```

@@ -307,8 +307,8 @@ const requiredChromeStoreSubmissionSnippets = [
   { name: "store preflight command", value: "npm.cmd run preflight:store" },
   { name: "release readiness gate", value: "npm.cmd run check:release-ready" },
   { name: "private data warning", value: "Do not paste real passwords, private email inbox contents, Supabase service-role keys, OAuth client secrets, or Chrome Web Store credentials into any repo file" },
-  { name: "store package path", value: "release/paper-comment-extension-0.5.5.zip" },
-  { name: "store screenshot folder", value: "release/store-assets/0.5.5/screenshots/" },
+  { name: "store package path", value: "release/paper-comment-extension-0.5.6.zip" },
+  { name: "store screenshot folder", value: "release/store-assets/0.5.6/screenshots/" },
   { name: "unlisted beta visibility", value: "Recommended first visibility: `Unlisted`" }
 ];
 
@@ -340,6 +340,7 @@ const requiredAuthFlowSnippets = [
   { name: "cloud email sign-in endpoint", source: cloudClient, value: 'authRequest("/auth/v1/token?grant_type=password"' },
   { name: "cloud session refresh endpoint", source: cloudClient, value: 'authRequest("/auth/v1/token?grant_type=refresh_token"' },
   { name: "cloud password reset endpoint", source: cloudClient, value: 'authRequest("/auth/v1/recover"' },
+  { name: "cloud resend confirmation endpoint", source: cloudClient, value: 'authRequest("/auth/v1/resend"' },
   { name: "cloud sign-out clears session", source: cloudClient, value: "storageRemove([SESSION_KEY])" },
   { name: "cloud profile status lookup", source: cloudClient, value: "select=id,display_name,role,status" },
   { name: "cloud auth API export", source: cloudClient, value: "signInWithGoogle" },
@@ -348,6 +349,7 @@ const requiredAuthFlowSnippets = [
   { name: "content auth modal mode switch", source: contentScript, value: 'state.authMode = isSignUpMode ? "signin" : "signup";' },
   { name: "content password length guard", source: contentScript, value: "Use at least 8 characters for your password." },
   { name: "content forgot-password action", source: contentScript, value: "runPasswordReset" },
+  { name: "content resend confirmation action", source: contentScript, value: "runConfirmationResend" },
   { name: "content contextual auth intent", source: contentScript, value: "openAuthModal(\"comment\")" },
   { name: "content returns to rating after sign-in", source: contentScript, value: 'if (intent === "rate") state.ratingOpen = true;' },
   { name: "popup account session display", source: popupScript, value: "Your comments, replies, ratings, and profile are synced." },
@@ -357,7 +359,8 @@ const requiredAuthFlowSnippets = [
   { name: "profile email sign-up", source: webApp, value: "async function signUpProfile" },
   { name: "profile session refresh", source: webApp, value: "async function refreshProfileSession" },
   { name: "profile Google sign-in", source: webApp, value: "function startProfileGoogleSignIn" },
-  { name: "profile password reset", source: webApp, value: "sendPasswordResetEmail" }
+  { name: "profile password reset", source: webApp, value: "sendPasswordResetEmail" },
+  { name: "profile resend confirmation", source: webApp, value: "resendProfileConfirmationEmail" }
 ];
 
 for (const snippet of requiredAuthFlowSnippets) {
