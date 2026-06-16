@@ -129,7 +129,20 @@ try {
 
   Write-Host ""
   Write-Host "== Live account flow check =="
-  Invoke-NpmScript "check:live-account-flow"
+  try {
+    Invoke-NpmScript "check:live-account-flow"
+  } catch {
+    Write-Host ""
+    Write-Host "Account QA did not pass."
+    Write-Host "Most common causes:"
+    Write-Host "  - The reader test email/password was typed incorrectly."
+    Write-Host "  - The reader account exists but has not confirmed its signup email."
+    Write-Host "  - You used the fresh signup account as the reader account before confirming it."
+    Write-Host ""
+    Write-Host "Do not run finalize:account-qa for failed rows yet. Confirm the account, then rerun:"
+    Write-Host "  npm.cmd run qa:account"
+    throw
+  }
 
   Write-Host ""
   Write-Host "Account QA helper finished. Use the Manual QA row guidance above, then run:"

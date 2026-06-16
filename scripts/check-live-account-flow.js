@@ -92,10 +92,22 @@ async function supabaseGet(pathname, session) {
 
 async function signIn(label, account) {
   assert(account.email && account.password, `Missing ${label} credentials.`);
-  const session = await authPost("/auth/v1/token?grant_type=password", {
-    email: account.email,
-    password: account.password
-  });
+  let session;
+  try {
+    session = await authPost("/auth/v1/token?grant_type=password", {
+      email: account.email,
+      password: account.password
+    });
+  } catch (error) {
+    if (/invalid login credentials/i.test(error.message)) {
+      throw new Error([
+        `Invalid login credentials for ${label} account ${redactEmail(account.email)}.`,
+        "Use an existing confirmed reader test account, or confirm the signup email first.",
+        "Do not run finalize:account-qa for this item until email/password sign-in succeeds."
+      ].join(" "));
+    }
+    throw error;
+  }
   assert(session.access_token && session.user?.id, `${label} sign-in did not return a valid session.`);
   console.log(`OK ${label} email/password sign-in for ${redactEmail(account.email)}.`);
   return session;
@@ -267,5 +279,7 @@ async function main() {
 
 main().catch((error) => {
   console.error(error.message);
-  process.exit(1);
+  console.error("");
+  console.error("Account QA did not pass. Leave the matching manual QA rows as Pending, fix the account issue, then rerun `npm.cmd run qa:account`.");
+  process.exitCode = 1;
 });
